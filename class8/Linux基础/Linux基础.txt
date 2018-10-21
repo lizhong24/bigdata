@@ -1,0 +1,183 @@
+学习大数据：
+1、体系架构、原理（重要）
+2、多做练习和试验
+ 
+========================================================================
+实验环境：网盘 链接：https://pan.baidu.com/s/1c2haSrm 密码：c140
+1、Linux操作系统：RedHat 7.4  64位
+2、JDK 1.8 64位
+3、Hadoop生态：Hadoop 2.7.3、HBase、Hive等等
+4、Spark 2.1.0 相对应Scala 2.11.8
+ 
+========================================================================
+学习路线和课程简介
+1、基础：Java语言（Java SE）：变量、循环、if等等
+                              面向对象
+                              I/O输入和输出：HDFS会用到
+                              反射、泛型：MapReduce程序
+                              JDBC：操作关系型数据库（RDBMS）：Hive会用到
+         Linux基础：基本操作
+         SQL基础：select（重点） insert update delete  -----> Hive、Spark SQL都会用到
+                  大数据的终极目标：使用SQL分析大数据
+ 
+2、Hadoop
+    （1）数据存储：HDFS（Hadoop Distributed File System）
+    （2）数据计算：MapReduce（Java程序）：在Hadoop 2.x以后，Yarn容器中
+                   实现离线计算
+    （3）Hive：基于HDFS之上的数据仓库，支持SQL语句
+    （4）HBase：基于HDFS之上的NoSQL数据库
+    （5）ZooKeeper：实现HA（High Availability高可用性）的功能
+                    实现秒杀
+    （6）其他：Sqoop、Flume、Pig
+     
+3、实时计算
+    （1）Redis内存NoSQL数据库
+         Redis Cluster：分布式解决方案
+    （2）Apache Storm：进行实时计算（流式计算）
+         
+4、Spark：只有数据计算，没有数据的存储（依赖HDFS）
+    （1）Scala编程语言：多范式的编程语言（支持多种方式编程：1、面向对象  2、函数式编程）
+    （2）Spark Core：内核，相当于MapReduce
+                     最重要概念：RDD（弹性分布式数据集）
+    （3）Spark SQL：类似Hive、支持SQL
+    （4）Spark Streaming：处理流式计算的模块，类似Storm
+          
+========================================================================
+第一章、Linux基础
+ 
+一、Linux的实验环境
+    1、Linux操作系统：RedHat 7.4  64位
+    2、Vmware版本不能太低，12版本
+    3、网卡：使用“NET模式”
+    4、一共5台虚拟机
+        bigdata111   192.168.146.111
+        bigdata112   192.168.146.112
+        bigdata113   192.168.146.113
+        bigdata114   192.168.146.114
+        bigdata115   192.168.146.115
+ 
+二、配置Linux和Linux的目录结构
+    1、关闭防火墙
+        systemctl stop firewalld.service
+        systemctl disable firewalld.service
+         
+    2、设置主机名和IP的对应关系：/etc/hosts
+        vi /etc/hosts
+        192.168.146.111 bigdata111
+         
+    3、Linux的tmp目录
+        （*）特点：一旦Linux重启，该目录下所有数据会被删除
+        （*）HDFS默认的数据保存的目录是：/tmp
+ 
+三、vi编辑器：相当于记事本
+    三种模式：
+    1、编辑模式：等待命令输入
+                  i：进入插入模式
+     
+    2、插入模式：按esc键
+     
+    3、命令模式：需要在编辑模式上，输入：号
+        w  保存
+        wq 保存退出
+        wq! 强制保存退出
+        q 退出
+        打开行号：set number
+        关闭行号: set nonumber
+         
+        换行：set wrap
+              set nowrap
+ 
+四、文件目录操作命令：（重点掌握，类似HDFS的操作命令）
+    （*）ls 显示文件和目录列表 
+         -l 列出文件的详细信息  等价于：ll命令
+         -a 列出当前目录所有文件，包含隐藏文件
+          
+         隐藏文件：/root/.bash_profile 设置环境变量:JAVA_HOME、HADOOP_HOME等等
+         隐藏目录：/root/.ssh  ----> 配置免密码登录(Hadoop和Spark)，有公钥和私钥
+          
+         HDFS操作：hdfs dfs -ls /  查看HDFS的根目录
+      
+    （*）mkdir 创建目录
+            -p 父目录不存在情况下先生成父目录
+             
+        约定：mkdir /root/tools     ----> 安装包
+              mkdir /root/training  ----> 安装目录
+     
+        HDFS上：hdfs dfs -mkdir /input    
+     
+    cd 切换目录
+    touch 生成一个空文件
+     
+    （*）echo 生成一个带内容文件
+         使用echo查看环境变量值
+         echo $JAVA_HOME   
+     
+    （*）cat、tac 显示文本文件内容
+         cat是从第一行开始写；tac是从最后一行开始写
+     
+        查看HDFS文件的内容：hdfs dfs -cat /input/data.txt
+         
+    （*）cp 复制文件或目录
+        cp a.txt b.txt
+        HDFS: hdfs dfs -cp /input/data.txt  /input/datanew.txt
+     
+    （*）rm 删除文件
+            -r 同时删除该目录下的所有文件
+            -f 强制删除文件或目录
+             
+        HDFS：hdfs dfs -rmr /input/data.txt
+              HDFS有回收站，默认情况下，关闭
+     
+    （*）ps 显示瞬间的进程状态
+            ps –ef 使用标准格式显示每个进程信息
+         
+        查看Redis服务实例：ps -ef |grep redis-server
+ 
+    （*）kill 杀死一个进程
+         参数：-9 强制杀死一个进程
+               -3 Java进程，打印Java进程的Thread Dump
+ 
+    （*）tar 文件、目录打（解）包
+ 
+五、Linux的权限管理（非常类似HDFS的权限管理）
+    1、权限的类型：3种
+        r  读
+        w  写
+        x 执行
+         
+    2、查看文件或者目录的权限：ls -l 或者 ll
+ 
+六、安装常用软件：安装JDK
+    tar -zxvf jdk-8u144-linux-x64.tar.gz -C ~/training/
+     
+    设置环境变量  vi ~/.bash_profile
+    JAVA_HOME=/root/training/jdk1.8.0_144
+    export JAVA_HOME
+ 
+    一定要把Java home的bin在最前面
+    PATH=$JAVA_HOME/bin:$PATH
+    export PATH
+     
+    生效环境变量 source ~/.bash_profile
+ 
+七、案例：Java的死锁分析（或者产生了性能的瓶颈）
+    https://www.cnblogs.com/toSeeMyDream/p/7151635.html
+     
+    JDK heap dump：分析OOM的问题（Out Of Memery）
+    JDK Thread dump：分析性能瓶颈（线程信息）
+    得到Thread Dump
+    （*）在Linux：kill -3 PID
+        Java stack information for the threads listed above:
+        ===================================================
+        "Thread-1":
+            at ThreadB.run(DeadLock.java:68)
+            - waiting to lock <0x00000000c285cb50> (a java.lang.Object)
+            - locked <0x00000000c285cb60> (a java.lang.Object)
+        "Thread-0":
+            at ThreadA.run(DeadLock.java:41)
+            - waiting to lock <0x00000000c285cb60> (a java.lang.Object)
+            - locked <0x00000000c285cb50> (a java.lang.Object)
+ 
+        Found 1 deadlock.
+         
+    （*）在Window上：按ctrl+break(fn+B键)
