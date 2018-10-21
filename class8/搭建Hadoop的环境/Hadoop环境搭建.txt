@@ -1,0 +1,197 @@
+一、Hadoop的安装与配置
+	（一）准备工作
+		1、安装Linux和配置Linux
+		2、关闭防火墙、配置主机名
+		3、安装JDK
+		4、解压安装包
+			tar -zxvf hadoop-2.7.3.tar.gz -C ~/training/
+	
+	（二）Hadoop的目录结构
+			安装tree命令
+			rpm -ivh tree-1.6.0-10.el7.x86_64.rpm
+			
+			设置Hadoop的环境变量  vi ~/.bash_profile
+			HADOOP_HOME=/root/training/hadoop-2.7.3
+			export HADOOP_HOME
+			
+			PATH=$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$PATH
+			export PATH
+			
+			生效： source ~/.bash_profile
+			
+	（三）Hadoop的三种安装模式
+		1、本地模式：
+			特点：没有HDFS，只能测试MapReduce程序（不是运行在Yarn中，做一个独立的Java程序来运行）
+			测试MapReduce程序：
+			hadoop jar hadoop-mapreduce-examples-2.7.3.jar wordcount /root/temp/input/data.txt /root/temp/output/wc
+			
+			注意：路径都是本地Linux的路径
+		
+		2、伪分布模式
+			特点：在单机上，模拟一个分布式的环境，具备Hadoop的所有功能
+					HDFS：NameNode + DataNode + SecondaryNameNode
+					Yarn：ResourceManager + NodeManager
+					
+			（*）hadoop-env.sh	JAVA_HOME	/root/training/jdk1.8.0_144
+			（*）hdfs-site.xml
+					<!--配置数据块的冗余度,默认是3-->
+					<!--原则冗余度跟数据节点个数保持一致,最大不要超过3-->
+					<property>	
+						<name>dfs.replication</name>
+						<value>1</value>
+					</property>
+
+					<!--是否开启HDFS的权限检查，默认是true-->
+					<!--使用默认值，后面会改为false-->
+					<!--
+					<property>	
+						<name>dfs.permissions</name>
+						<value>false</value>
+					</property>				
+                    -->					
+			
+			（*）core-site.xml
+					<!--配置HDFS主节点的地址，就是NameNode的地址-->
+					<!--9000是RPC通信的端口-->
+					<property>	
+						<name>fs.defaultFS</name>
+						<value>hdfs://bigdata111:9000</value>
+					</property>	
+
+					<!--HDFS数据块和元信息保存在操作系统的目录位置-->
+					<!--默认是Linux的tmp目录,一定要修改-->
+					<property>	
+						<name>hadoop.tmp.dir</name>
+						<value>/root/training/hadoop-2.7.3/tmp</value>
+					</property>
+
+			（*）mapred-site.xml（默认没有这个文件）
+					<!--MR程序运行容器或者框架-->
+					<property>	
+						<name>mapreduce.framework.name</name>
+						<value>yarn</value>
+					</property>		
+
+			（*）yarn-site.xml
+			        <!--配置Yarn主节点的位置-->
+					<property>	
+						<name>yarn.resourcemanager.hostname</name>
+						<value>bigdata111</value>
+					</property>			
+
+					<!--NodeManager执行MR任务的方式是Shuffle洗牌-->
+					<property>	
+						<name>yarn.nodemanager.aux-services</name>
+						<value>mapreduce_shuffle</value>
+					</property>	
+					
+			（*）对HDFS的NameNode进行格式化  -----> 目录：/root/training/hadoop-2.7.3/tmp
+					举例：软盘，需要格式化
+					
+					命令：hdfs namenode -format
+					日志：Storage directory /root/training/hadoop-2.7.3/tmp/dfs/name has been successfully formatted.
+					
+			（*）启动：
+					HDFS：start-dfs.sh
+					Yarn: start-yarn.sh
+					统一的：start-all.sh 
+					
+					Web Console访问：hdfs: 端口: 50070
+					                 yarn: 端口：8088
+									 
+			（*）免密码登录的原理和配置
+					
+		3、全分布模式
+		
+	（四）全分布模式：真正用于生产的环境
+		1、至少需要3台机器
+		2、集群的规划
+		3、准备工作
+			（*）安装三台Linux、JDK、关闭防火墙
+			（*）设置主机名和IP  vi /etc/hosts
+					192.168.146.112 bigdata112
+					192.168.146.113 bigdata113
+					192.168.146.114 bigdata114
+			
+			（*）配置免密码登录：两两之间的免密码登录
+					ssh-copy-id -i .ssh/id_rsa.pub root@bigdata112
+					ssh-copy-id -i .ssh/id_rsa.pub root@bigdata113
+					ssh-copy-id -i .ssh/id_rsa.pub root@bigdata114
+					
+			（*）保证集群的时间同步
+			
+		4、在主节点上安装（bigdata112）
+			（*）解压和设置环境变量
+			（*）hadoop-env.sh
+					export JAVA_HOME=/root/training/jdk1.8.0_144
+					
+			（*）hdfs-site.xml
+					<!--配置数据块的冗余度,默认是3-->
+					<!--原则冗余度跟数据节点个数保持一致,最大不要超过3-->
+					<property>	
+						<name>dfs.replication</name>
+						<value>2</value>
+					</property>
+
+					<!--是否开启HDFS的权限检查，默认是true-->
+					<!--使用默认值，后面会改为false-->
+					<!--
+					<property>	
+						<name>dfs.permissions</name>
+						<value>false</value>
+					</property>				
+                    -->			
+					
+			（*）core-site.xml
+					<!--配置HDFS主节点的地址，就是NameNode的地址-->
+					<!--9000是RPC通信的端口-->
+					<property>	
+						<name>fs.defaultFS</name>
+						<value>hdfs://bigdata112:9000</value>
+					</property>	
+
+					<!--HDFS数据块和元信息保存在操作系统的目录位置-->
+					<!--默认是Linux的tmp目录,一定要修改-->
+					<property>	
+						<name>hadoop.tmp.dir</name>
+						<value>/root/training/hadoop-2.7.3/tmp</value>
+					</property>			
+			
+			（*）mapred-site.xml
+					<!--MR程序运行容器或者框架-->
+					<property>	
+						<name>mapreduce.framework.name</name>
+						<value>yarn</value>
+					</property>				
+			
+			（*）yarn-site.xml
+			        <!--配置Yarn主节点的位置-->
+					<property>	
+						<name>yarn.resourcemanager.hostname</name>
+						<value>bigdata112</value>
+					</property>			
+
+					<!--NodeManager执行MR任务的方式是Shuffle洗牌-->
+					<property>	
+						<name>yarn.nodemanager.aux-services</name>
+						<value>mapreduce_shuffle</value>
+					</property>				
+			
+			（*）slaves 配置从节点地址
+			      bigdata113
+				  bigdata114
+			
+			（*）对namenode进行格式化
+			
+		5、把bigdata112上安装好的目录复制到从节点上
+			scp -r hadoop-2.7.3/ root@bigdata113:/root/training
+			scp -r hadoop-2.7.3/ root@bigdata114:/root/training
+		
+		6、在主节点上启动集群
+		   start-all.sh
+		   
+		7、跟伪分布一样，在主节点上执行WordCount
+	
+			
+
+	
