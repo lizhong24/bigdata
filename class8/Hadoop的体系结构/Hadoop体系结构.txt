@@ -1,0 +1,83 @@
+一、HDFS：数据存储
+	（一）HDFS的体系架构
+		1、NameNode：名称节点
+			（*）职责：
+				（1）是HDFS的主节点、管理员
+				（2）接收客户端（命令行、Java程序）的请求：创建目录、上传数据、下载数据、删除数据等等
+				（3）管理和维护HDFS的日志和元信息
+					（*）日志文件（edits文件）：记录的是客户端的所有操作，同时体现了HDFS的最新的状态
+						 是一个二进制文件
+						 位置：$HADOOP_HOME/tmp/dfs/name/current
+						 edits_inprogress_0000000000000000107 代表：正在操作的日志文件
+						 
+						 举例：hdfs dfs -mkdir /aaa
+						 HDFS提供了一个日志查看器（edits viewer），把edits文件转成文本（XML）格式
+						   命令：hdfs oev -i edits_inprogress_0000000000000000107 -o ~/a.xml
+						   
+						   
+					（*）元信息文件（fsimage文件）：记录的是数据块的位置信息、数据块的冗余信息
+					     没有提现HDFS的最新状态
+					     是一个二进制文件
+						 位置：$HADOOP_HOME/tmp/dfs/name/current
+						 HDFS提供了一个元信息查看器（image viewer），把fsimage文件转为文本或者xml都可以
+					
+		2、DataNode：数据节点
+			（*）职责：按照数据块保存数据库
+			            1.x： 64M
+						2.x：128M
+						
+			（*）数据块：表现形式：就是一个文件（blk*******）
+					位置：/root/training/hadoop-2.7.3/tmp/dfs/data/current/BP-419062579-192.168.157.111-1535553141546/current/finalized/subdir0/subdir0
+					
+					举例：上传一个大于128M的文件
+					
+			（*）设置数据块冗余度原则：一般跟数据节点的个数一样；但是最大不要超过3
+			（*）Hadoop 3.x以前，会造成存储空间的极大浪费
+			     Hadoop 3.x以后，HDFS纠删码技术，大大的节约存储的空间（节约一半 ）
+		
+		3、SecondaryNameNode：第二名称节点
+			职责：进行日志信息的合并
+			
+			（*）由于edits文件记录了最新的状态信息，并且随着操作越多，edits就会越大
+			（*）把edits中的最新信息写到fsimage中
+			（*）edits文件就可以清空
+			
+			补充点知识：检查点checkpoint
+			（*）Spark中的RDD的检查点：容错机制
+			（*）Oracle中的检查点：会以最高优先级唤醒数据库的写进程，将脏数据写入硬盘文件
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
