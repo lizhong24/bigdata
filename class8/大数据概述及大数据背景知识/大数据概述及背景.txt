@@ -1,0 +1,89 @@
+Hadoop的起源与背景知识（非常重要：原理的部分）
+================================================
+一、什么是大数据？
+	举例：
+	1、电商的推荐系统：（问题1）大量的订单如何存储？
+	                   （问题2）大量的订单如何计算？：注意：可能运用推荐算法（协同过滤、ALS、逻辑回归）
+	2、天气的预报：（问题1）大量的天气的数据如何存储？
+	               （问题2）大量的天气的数据如何计算？
+				   
+	3、核心的问题：（1）数据的存储------------------：分布式的文件系统：HDFS（Hadoop Distributed File System）
+	               （2）数据的计算（不是算法）------：分布式的计算：MapReduce、Spark（RDD：弹性分布式数据集）
+
+二、数据仓库和大数据
+	1、传统方式：搭建数据仓库（Data Warehouse）来解决大数据的问题
+	2、数据仓库就是一个数据库（Oracle、MySQL、MS）
+		（*）一般只做select
+		（*）大数据也是一般只做查询（分析）
+		
+	3、（重要）搭建数据仓库的过程：画图
+		（*）Hadoop、Spark中的一些组件
+
+三、OLTP和OLAP
+	1、OLTP：Online Transaction Processing 联机事务处理，指：（insert、update、delete）---> 事务
+	         传统的关系型数据库解决的问题
+			 
+	2、OLAP：Online Analytic Processing 联机分析处理，一般：只做查询select（分析）
+			 数据仓库就是一种OLAP的应用系统
+			 Hadoop、Spark看成是一种数据仓库的解决方案
+
+四、（最重要的内容）Google的基本思想：三篇论文
+	（一）GFS: Google File System  ---- HDFS: Hadoop Distributed File System
+		1、分布式文件系统
+		2、大数据的存储问题
+		3、HDFS中，记录数据保存的位置信息（元信息）-----> 采用倒排索引（Reverted Index）
+			（*）什么是索引？index
+				(1) create index 创建索引
+				(2) 就是一个目录
+				(3) 通过索引可以找到对应的数据
+				(4)问题：索引一定可以提高查询的速度吗？
+				
+			（*）什么是倒排索引？
+			
+		4、演示Demo：以伪分布环境为例
+	
+		HDFS= NameNode + SecondaryNameNode + DataNode
+	
+	（二）MapReduce:分布计算模型，问题来源是：PageRank（网页排名）
+		1、PageRank（网页排名）
+		2、举例：MapReduce的编程模型
+		3、演示Demo：单词计数WordCount
+	
+			Example：/root/training/hadoop-2.7.3/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.3.jar
+			Yarn的web console：
+			http://192.168.146.111:8088
+			
+			命令：hadoop jar hadoop-mapreduce-examples-2.7.3.jar wordcount /input/data.txt /output/day0829/wc1
+			
+		Yarn = ResourceManager + NodeManager
+	
+	（三）BigTable：大表  ------ NoSQL数据库：HBase
+		1、关系型数据库：Oracle、MySQL等等  ------> 行式数据库 ------> insert update delete
+		2、常见的NoSQL数据库
+			（*）Redis：内存数据库
+			（*）HBase：面向列  ------> 列式数据库 -----> select
+			（*）MongoDB：面向文档（BSON文档：是JSON的二进制）
+
+		3、大表的基本思想：所有的数据存入一张表；通过牺牲空间，换取时间
+		   举例：把同样的数据存入Oracle和大表中（HBase中一些基本概念）
+	
+		HBase = ZooKeeper + HMaster(主节点) + RegionServer（从节点）
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
