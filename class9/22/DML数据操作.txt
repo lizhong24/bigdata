@@ -1,4 +1,4 @@
-一、分区表
+﻿一、分区表
 	1、创建分区表
 	hive> create table dept_partitions(depno int,dept string,loc string)
 	partitioned by(day string)
@@ -44,7 +44,7 @@
 	load data local inpath '/root/itstar.txt' into table hunter;
 	
 	2、加载hdfs中数据
-	load data inpath '/hunter,txt' into table hunter;
+	load data inpath '/hunter.txt' into table hunter;
 	提示：相当于剪切
 	
 	3、覆盖原有的数据
