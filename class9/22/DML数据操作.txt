@@ -37,7 +37,7 @@
 	alter table dept_partitions change column desc desccc int;
 	
 	4、替换
-	alter table dept_partitions replace column(desccc int);
+	alter table dept_partitions replace columns(desccc int);
 
 三、DML数据操作
 	1、向表中加载数据
