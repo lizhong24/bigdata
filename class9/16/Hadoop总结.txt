@@ -1,0 +1,651 @@
+一、linux简介
+01.Linux简介
+    linux是一种自由和开放源代码的类UNIX操作系统。该操作系统的内核由林纳斯·托瓦兹
+    在1991年10月5日首次发布。，在加上用户空间的应用程序之后，成为Linux操作系统。
+    
+    应用：长时间的运行编写的程序代码，可以安装在各种计算机硬件设备中，如：
+          手机、平板电脑、路由器等 安卓最底层运行在linux。
+          
+02.Linux的分类
+    各种版本
+    1->Linux根据市场的需求不同，基本分两个方向：
+        1）图形化界面版：注重用户体验，目前成熟度不够（图形渲染、性能稍低）
+        ubuntu(python)
+        
+        2）服务器版：没有好看的界面，控制台窗口输入命令操作系统（性能高）
+        centOS(支持图形化)
+        redhat(支持图形化)
+        
+    2->Linux根据原生程度（后期二次开发）
+        1）内核版本：在linus领导下的小组开发维护的系统（原版）
+        2）发行版本：一些组织或者公司在内核版本的基础上进行的二次开发之后发行的版本（盗版）
+        
+03.linux常用版本
+    centOS
+    ubuntu
+    redhat
+        
+04.Linux的目录结构
+    bin:存放二进制的可执行文件
+    sbin:存放二进制的可执行文件，只有root才能访问
+    etc:存放系统配置文件
+    usr:用于存放共享的系统资源
+    home:存放用户文件的根目录
+    root:超级用户的目录
+    dev:用于存放设备文件
+    lib:存放根本文件系统中的程序运行所需要的共享库和内核模块
+    mnt:系统管理员安装临时系统的安装点
+    boot:存放于系统引导时使用的文件
+    tmp:用于存放各种临时文件
+    var:用于存放运行时需要改变数据的文件
+    
+05.Linux常用命令行
+    ll/ls:查看当前目录下的所有文件    
+    cd / ：进入根目录
+    cd /usr/local : 进入子路径
+    cd .. : 返回到上一层目录
+    pwd:当前所在的路径
+    cd -:切换上一个所在的目录
+    
+06.防火墙相关命令
+    firewall-cmd --state 显示centOS7防火墙状态
+    systemctl stop firewalld 关闭防火墙
+    systemctl disable firewalld 禁止防火墙开机自启动
+
+二、linux进阶   
+1.配置静态IP
+    修改配置文件：
+    vi /etc/sysconfig/network-scripts/ifcfg-eno16777736
+    注掉 #BOOTPROTO="dhcp"
+    添加 IPADDR=192.168.80.11
+         NETMASK=255.255.255.0
+         GATEWAY=192.168.80.1
+         DNS1=192.168.124.1 四行
+    重启网卡使修改生效  service network restart 
+    
+2.常用基本命令
+    ll/ls:查看当前目录下的所有文件    
+    cd / ：进入根目录
+    cd /usr/games : 进入子路径
+    cd .. : 退出到上一层目录
+    pwd:当前所在的路径
+    cd -:切换上一个所在的目录
+
+3.文件夹的增删改
+    mkdir 文件夹： 创建文件夹
+    mv oldname newname：修改文件夹名称
+    rm 文件：删除文件
+    rm -f 文件：强制删除文件
+    rm -r 文件夹：递归删除文件夹
+    rm -rf 文件夹：强制递归删除
+    cp 文件 路径：复制文件
+    cp -r 文件夹 路径：复制文件夹
+    
+4.文件的操作命令
+    touch 文件名：创建文件
+    cat 文件名：查看文件
+    more 文件名：查看文件，显示百分比，回车下一行，空格向下一页，q退出
+    less 文件名：查看文件，可以使用键盘右下角的上下方向键翻页，q退出
+    tail -10 文件名：查看文件的最后10行
+    tail -f 监控文件：监控文件变化，例如日志文件
+    vi 文件名：按i：插入内容
+               按esc：退出编辑模式
+               按wq：保存退出
+               按q：不保存退出
+    rm -rf 文件名：删除文件
+    
+5.压缩和解压命令
+    解压：tar -zxvf 压缩包
+        z：调用gzip压缩命令进行压缩
+        x：解压文件
+        v：显示运行过程
+        f：指定文件名
+    压缩：tar -zcvf 打包后的文件名 打包文件
+        c：打包文件
+        例如：tar -zcvf test.tar.gz a.txt b.txt
+
+6.其他常用命令
+    pwd：显示当前所在位置
+    search / -name "a.txt"：在根目录下查找名称为a.txt的文件
+    whereis date：查找date命令所在位置
+    ps -ef：查看进程
+    ps -ef | grep 进程名
+    | 含义：管道符  上一条命令的输出是下一条命令的输入
+    yum search 软件：yum软件包管理器
+    yum install tools
+    chmod u+x 文件名：权限操作
+
+7.用户操作
+    useradd 用户名：添加用户
+    passwd 用户名：修改该用户的密码
+    su 用户名：切换用户
+    vi /etc/sudoers：可以给普通用户赋予root权限
+    root  ALL=(ALL)   ALL
+    test  ALL=(ALL)   ALL
+	
+三、HDFS分布式集群安装
+1.准备工作
+    虚拟机(电脑8G内存 磁盘500GB)
+    3台 linux系统（1台namenode 2台datanode）
+    
+    （1）关闭防火墙
+        firewall-cmd --state 查看防火墙状态
+        systemctl stop firewalld.service 关闭防火墙
+        systemctl disable firewalld.service 禁止开机启动
+        
+    （2）远程连接（CRT）
+        
+        
+    （3）永久设置主机名
+        vi /etc/hostname
+        注意：要reboot重启生效
+        
+    （4）配置映射文件
+        vi /etc/hosts
+        
+        #127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+        #::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+        192.168.146.132 hd09-1
+        192.168.146.133 hd09-2
+        192.168.146.134 hd09-3
+
+2.安装jdk
+    （1）上传tar包
+        SecureCRT  中  按alt + p进入sftp模式，拖拽上传文件
+        
+    （2）解压tar包
+        tar -zxvf jdk-8u144-linux-x64.tar.gz
+    
+    （3）配置环境变量
+        vi /etc/profile 
+        
+        export JAVA_HOME=/root/hd/jdk1.8.0_144
+        export PATH=$PATH:$JAVA_HOME/bin
+        
+        source /etc/profile  加载环境变量
+        
+    （4）发送到其它机器
+        scp -r hd/jdk1.8.0_144/ hd09-2:hd/jdk1.8.0_144
+        scp -r hd/jdk1.8.0_144/ hd09-3:hd/jdk1.8.0_144
+        scp -r /etc/profile hd09-2:/etc
+        scp -r /etc/profile hd09-3:/etc
+        
+        注意：加载环境变量 source /etc/profile
+        
+3.配置ssh免密登录    
+        ssh-keygen  生成密钥对
+        ssh-copy-id hd09-1
+        ssh-copy-id hd09-2
+        ssh-copy-id hd09-3
+        
+4.安装HDFS集群
+    （1）解压tar包
+        tar -zxvf hadoop-2.8.4.tar.gz
+        
+    （2）修改hadoop-env.sh
+        export JAVA_HOME=/root/hd/jdk1.8.0_144
+    
+    （3）修改core-site.xml
+        <configuration>
+            //配置hdfs
+            <property>
+                <name>fs.defaultFS</name>
+                <value>hdfs://hd09-1:9000</value>
+            </property>
+        </configuration>
+        
+    （4）修改hdfs-site.xml
+        <configuration>
+            //配置元数据存储位置
+            <property>
+                <name>dfs.namenode.name.dir</name>
+                <value>/root/hd/dfs/name</value>
+            </property>
+            //配置数据存储位置
+            <property>
+                <name>dfs.datanode.data.dir</name>
+                <value>/root/hd/dfs/data</value>
+            </property>
+        </configuration>
+        
+    （5）配置hadoop环境变量
+        vi /etc/profile
+        
+        export JAVA_HOME=/root/hd/jdk1.8.0_144
+        export HADOOP_HOME=/root/hd/hadoop-2.8.4
+        export PATH=$PATH:$JAVA_HOME/bin:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
+        
+        source /etc/profile  加载环境变量
+    
+    （6）格式化namenode
+        hadoop namenode -format
+        
+    （7）分发hadoop到其他服务器
+        scp -r ~/hd/hadoop-2.8.4/ hd09-2:/root/hd/
+        scp -r ~/hd/hadoop-2.8.4/ hd09-3:/root/hd/
+        
+    （8）分发hadoop环境变量
+        scp -r /etc/profile hd09-2:/etc
+        scp -r /etc/profile hd09-3:/etc
+    
+        注意：加载环境变量 source /etc/profile
+        
+    （9）启动namenode
+        hadoop-daemon.sh start namenode
+    
+    （10）启动datanode
+        hadoop-daemon.sh start datanode
+    
+    （11）访问namenode提供的web端口：50070
+        hd09-1:50070
+        
+    （12）访问hd09-1出错需要修改 windows电脑的 C:\Windows\System32\drivers\etc\hosts 文件 
+        在下面加上
+        192.168.146.132 hd09-1
+        192.168.146.133 hd09-2
+        192.168.146.134 hd09-3
+        即可
+        
+5.自动批量的启动脚本
+    （1）修改配置文件slaves 加入
+        hd09-2
+        hd09-3
+    
+    （2）执行启动命令
+        start-dfs.sh
+		
+四、HDFS集群修改SecondaryNameNode位置及hdfs命令行操作
+1.HDFS集群修改SecondaryNameNode位置到hd09-2
+    （1）修改hdfs-site.xml
+        <configuration>
+            //配置元数据存储位置
+            <property>
+                <name>dfs.namenode.name.dir</name>
+                <value>/root/hd/dfs/name</value>
+            </property>
+            //配置数据存储位置
+            <property>
+                <name>dfs.datanode.data.dir</name>
+                <value>/root/hd/dfs/data</value>
+            </property>
+            
+            <property>
+                <name>dfs.namenode.secondary.http-address</name>
+                <value>hd09-2:50090</value>
+            </property>    
+        </configuration>
+        
+        注意上面的第三个<property>不是
+            <property>
+                <name>dfs.namenode.secondary.https-address</name>
+                <value>hd09-2:50090</value>
+            </property>    
+        
+    （2）分发hdfs-site.xml到其他服务器
+        cd /root/hd/hadoop-2.8.4/etc/hadoop
+        
+        scp hdfs-site.xml hd09-2:$PWD
+        scp hdfs-site.xml hd09-3:$PWD
+    
+    （3）hdfs启动命令
+        start-dfs.sh
+    
+    （4）hdfs停止命令
+        stop-dfs.sh
+
+2.HDFS集群修改replication（副本数）
+        修改hdfs-site.xml 在<configuration>中加入
+            <property>
+                <name>dfs.replication</name>
+                <value>3</value>
+            </property>
+        其中<value>中的值就是副本数
+
+3.HDFS集群修改blocksize（块大小）                
+        修改hdfs-site.xml 在<configuration>中加入
+            <property>
+                <name>dfs.blocksize</name>
+                <value>134217728</value>
+            </property>
+        其中<value>中的值就是块大小，单位是字节(byte)
+        
+4.hdfs命令行
+    （1）查看帮助
+        hdfs dfs -help 
+        
+    （2）查看当前目录信息
+        hdfs dfs -ls /
+        
+    （3）上传文件
+        hdfs dfs -put /本地路径 /hdfs路径
+        
+    （4）剪切文件
+        hdfs dfs -moveFromLocal a.txt /aa.txt
+        
+    （5）下载文件到本地
+        hdfs dfs -get /hdfs路径 /本地路径
+        
+    （6）合并下载
+        hdfs dfs -getmerge /hdfs路径文件夹 /合并后的文件
+        
+    （7）创建文件夹
+        hdfs dfs -mkdir /hello
+        
+    （8）创建多级文件夹
+        hdfs dfs -mkdir -p /hello/world
+        
+    （9）移动hdfs文件
+        hdfs dfs -mv /hdfs路径 /hdfs路径
+        
+    （10）复制hdfs文件
+        hdfs dfs -cp /hdfs路径 /hdfs路径
+        
+    （11）删除hdfs文件
+        hdfs dfs -rm /aa.txt
+        
+    （12）删除hdfs文件夹
+        hdfs dfs -rm -r /hello
+        
+    （13）查看hdfs中的文件
+        hdfs dfs -cat /文件
+        hdfs dfs -tail -f /文件
+        
+    （14）查看文件夹中有多少个文件
+        hdfs dfs -count /文件夹
+        
+    （15）查看hdfs的总空间
+        hdfs dfs -df /
+        hdfs dfs -df -h /
+        
+    （16）修改副本数    
+        hdfs dfs -setrep 1 /a.txt
+		
+五、MapReduce分布式编程框架及yarn集群搭建
+1.大数据解决的问题？    
+    海量数据的存储：hadoop->分布式文件系统HDFS
+    海量数据的计算：hadoop->分布式计算框架MapReduce
+    
+2.什么是MapReduce?
+    分布式程序的编程框架，java-->ssh ssm，目的：简化开发！
+    是基于hadoop的数据分析应用的核心框架。
+    mapreduce的功能：将用户编写的业务逻辑代码和自带默认组件整合成一个完整的
+    分布式运算程序，并发的运行在hadoop集群上。
+    
+3.MapReduce的优缺点
+    优点：
+    （1）易于编程
+    （2）良好的拓展性
+    （3）高容错性
+    （4）适合处理PB级别以上的离线处理
+
+    缺点：
+    （1）不擅长做实时计算
+    （2）不擅长做流式计算（mr的数据源是静态的）
+    （3）不支持DAG（有向图）计算（spark）
+    
+4.自动化调度平台yarn(MapReduce程序的运行平台)
+    MapReduce程序应该在多台机器上运行启动，而且要先执行maptask，等待每个maptask都处理完成后
+    还要启动很多个reducetask，这个过程要用户手动调用任务不太现实，
+    需要一个自动化的任务调度平台-->hadoop当中2.x中提供了一个分布式调度平台-YARN
+    
+5.搭建yarn集群
+    （1）修改配置文件 yarn-site.xml
+    <property>
+        <name>yarn.resourcemanager.hostname</name>
+        <value>hd09-1</value>
+    </property>
+
+    <property>
+        <name>yarn.nodemanager.aux-services</name>
+        <value>mapreduce_shuffle</value>
+    </property>
+    
+    （2）然后复制到每台机器  $PWD 当前目录
+    scp yarn-site.xml root@hd09-2:$PWD
+    scp yarn-site.xml root@hd09-3:$PWD
+    
+    （3）修改slaves文件
+    
+    然后在hd09-1上，修改hadoop的slaves文件，列入要启动nodemanager的机器
+    然后将hd09-1到所有机器的免密登陆配置好
+    
+    （4）脚本启动yarn集群：
+    启动：
+    start-yarn.sh
+    停止：
+    stop-yarn.sh
+
+    （5）访问web端口
+    启动完成后，可以在windows上用浏览器访问resourcemanager的web端口：
+    http://hd09-1:8088
+	
+六、MapReduce编程规范
+    用户编写mr程序主要分为三个部分：Mapper,Reducer,Driver
+    1.Mapper阶段
+        （1）用户自定义Mapper类 要继承父类Mapper
+        （2）Mapper的输入数据的kv对形式（kv类型可以自定义）
+        （3）Mapper的map方法的重写（加入业务逻辑）
+        （4）Mapper的数据输出kv对的形式（kv类型可以自定义）
+        （5）map()方法(maptask进程)对每个<k,v>调用一次
+        
+    2.Reducer阶段
+        （1）用户自定义Reducer类 要继承父类Reducer
+        （2）Reducer的数据输入类型对应的是Mapper阶段的输出数据类型,也是kv对
+        （3）Reducer的reduce方法的重写（加入业务逻辑）
+        （4）ReduceTask进程对每组的k的<k,v>组调用一次reduce方法
+        
+    3.Driver阶段
+        MR程序需要一个Driver来进行任务的提交，提交的任务是一个描述了各种重要信息的job对象
+    
+    4.修改mapred-site.xml文件<configuration>中加入
+    <property>
+        <name>mapreduce.framework.name</name>
+        <value>yarn</value>
+    </property>
+
+七、常用数据序列化类型
+    1. JAVA 类型                    HADOOP 类型
+        int                            IntWritable
+        float                        FloatWritable
+        long                        LongWritable
+        double                        DoubleWritable
+        string                        Text
+        boolean                        BooleanWritable
+        byte                        ByteWritable
+        map                            MapWritable
+        array                        ArrayWritable
+
+    2.为什么要序列化？
+    存储“活的对象”
+
+    3.什么是序列化？
+    序列化就是把内存当中的对象，转换成字节序列以便于存储和网络传输。
+    反序列化就是将受到的字节序列或者硬盘的持久化数据，转换成内存中的对象。
+
+    java的序列化-->Serializable
+
+    4.为什么不使用java提供的序列化接口？
+    java的序列化是一个重量级的序列化框架，一个对象被序列化后会附带很多额外的信息（效验信息,header,继承体系等）。
+    不便于在网络中高效传输，所以hadoop开发了一套序列化机制（Writable）,精简/高效。
+
+    5.为什么序列化在hadoop中很重要？
+    hadoop通信是通过远程调用（rpc）实现的，需要进行序列化
+
+    6.特点：
+        1）紧凑
+        2）快速
+        3）可拓展
+        4）互操作
+		
+八、排序
+需求：根据用户每月使用的流量按照使用的流量多少排序
+
+接口->WritableCompareable
+
+	排序操作在hadoop中属于默认的行为。默认按照字典殊勋排序。
+	
+排序的分类：
+
+	1）部分排序
+	
+	2）全排序
+	
+	3）辅助排序
+	
+	4）二次排序
+	
+Combiner 合并
+
+	父类Reducer
+	局部汇总 ，减少网络传输量 ，进而优化程序。
+	
+	注意：求平均值？
+	
+	3  5  7  2  6
+	
+	mapper: (3 + 5 + 7)/3 = 5
+			(2 + 6)/2 = 4
+			
+	reducer:(5+4)/2
+	
+	只能应用在不影响最终业务逻辑的情况下
+
+九、压缩
+1、hadoop的3个阶段
+	（1）分布式文件系统HDFS
+	（2）分布式编程框架MapReduce
+	（3）yarn框架
+
+2、Hadoop数据压缩
+	MR操作过程中进行大量数据传输。
+	压缩技术能够有效的减少底层存储（HDFS）读写字节数。
+	压缩提高了网络带宽和磁盘空间的效率。
+	数据压缩能够有效的节省资源！
+	压缩是mr程序的优化策略！
+	通过压缩编码对mapper或者reducer数据传输进行数据的压缩，以减少磁盘IO。
+
+3、压缩的基本原则
+	1、运算密集型任务少用压缩
+	2、IO密集型的任务，多用压缩
+
+4、MR支持的压缩编码
+	压缩格式 | hadoop是否自带？ |文件拓展名 | 是否可以切分
+	DEFAULT  |       是         | .deflate  | 	否
+	Gzip     |       是         | .gz       | 	否
+	bzip2    |       是         | .bz2      | 	是
+	LZO      |       否         | .lzo      | 	是
+	Snappy   |       否         | .snappy   | 	否
+
+5、编码/解码器
+	DEFAULT | org.apache.hadoop.io.compress.DefaultCodeC
+	Gzip    | org.apache.hadoop.io.compress.GzipCodeC
+	bzip2   | org.apache.hadoop.io.compress.BZip2CodeC
+	LZO     | com.hadoop.compression.lzo.LzoCodeC
+	Snappy  | org.apache.hadoop.io.compress.SnappyCodeC
+
+6、压缩性能
+	压缩算法 | 原始文件大小 | 压缩文件大小| 压缩速度 | 解压速度
+	gzip     | 8.3GB        |	1.8GB     |17,5MB/s  |58MB/s
+	bzip2    | 8.3GB        |	1.1GB     |2.4MB/s   |9.5MB/s
+	LZO      | 8.3gb        |	2.9GB     |49.3MB/s  |74.6MB/s
+
+7、使用方式
+	（1）map端输出压缩
+		//开启map端的输出压缩
+		conf.setBoolean("mapreduce.map.output.compress", true);
+		//设置压缩方式
+		//conf.setClass("mapreduce.map.output.compress.codec", DefaultCodec.class, CompressionCodec.class);
+		conf.setClass("mapreduce.map.output.compress.codec",BZip2Codec.class, CompressionCodec.class);
+	（2）reduce端输出压缩
+		//开启reduce端的输出压缩
+		FileOutputFormat.setCompressOutput(job, true);
+		//设置压缩方式
+		//FileOutputFormat.setOutputCompressorClass(job, DefaultCodec.class);
+		//FileOutputFormat.setOutputCompressorClass(job, BZip2Codec.class);
+		FileOutputFormat.setOutputCompressorClass(job, GzipCodec.class);
+	
+十、hadoop优化
+1、mr程序的效率瓶颈
+	功能：分布式离线计算
+	计算机性能：CPU、内存、磁盘、网络
+	I/O操作优化
+	（1）数据倾斜（代码优化）
+	（2）map和reduce数设置不合理
+	（3）map运行时间太长，导致reduce等待过久
+	（4）小文件过多（combineTextInputFomrat小文件合并）
+	（5）不可分块的超大文件（不断的溢写）
+	（6）多个溢写小文件需要多次merge
+2、mr优化方法
+	六个方面考虑：数据输入、Map阶段、Reduce阶段、IO传输、
+	数据倾斜、参数调优
+	1­>数据输入
+		（1）合并小文件：在执行mr任务前就进行小文件合并
+		（2）采用CombineTextInputFormat来作为输入，解决输 入端大量小文件的场景
+		mr并不适合处理大量小文件
+	2­>Map阶段
+		（1）减少溢写次数（增加内存200M 80%）
+		<property>
+			<name>mapreduce.task.io.sort.mb</name>
+			<value>100</value>
+		</property>
+		<property>
+			<name>mapreduce.map.sort.spill.percent</name>
+			<value>0.80</value>
+		</property>
+		(2)减少合并次数
+		<property>
+			<name>mapreduce.task.io.sort.factor</name>
+			<value>10</value>
+		</property>
+		（3）在map之后，不影响业务逻辑情况下进行combiner
+	3­>Reduce阶段
+		（1）合理设置map与reduce个数
+		（2）设置map/reduce共存
+		设置运行一定程度的map运行后 启动reduce减少等待时间
+		<property>
+			<name>mapreduce.job.reduce.slowstart.completedmaps</name>
+			<value>0.05</value>
+		</property>
+		（3）合理设置reduce端的buffer
+		<property>
+			<name>mapreduce.reduce.markreset.buffer.percent</name>
+			<value>0.0</value>
+		</property>
+	4­>传输
+		（1）进行数据压缩
+		（2）使用sequenceFile
+	5­>数据倾斜
+		（1）进行范围分区
+		（2）自定义分区
+		（3）Combine
+		(4)能用mapjoin坚决不用reduce join
+	6­>参数调优
+		设置核心数
+		map核心数设置：
+		<property>
+			<name>mapreduce.map.cpu.vcores</name>
+			<value>1</value>
+		</property>
+		reduce核心数设置：
+		<property>
+			<name>mapreduce.reduce.cpu.vcores</name>
+			<value>1</value>
+		</property>
+		设置内存
+		maptask内存设置：
+		<property>
+			<name>mapreduce.map.memory.mb</name>
+			<value>1024</value>
+		</property>
+		reducetask内存设置：
+		<property>
+			<name>mapreduce.reduce.memory.mb</name>
+			<value>1024</value>
+		</property>
+		reduce去map端拿数据并行度
+		<property>
+			<name>mapreduce.reduce.shuffle.parallelcopies</name>
+			<value>5</value>
+		</property>
+	
+	

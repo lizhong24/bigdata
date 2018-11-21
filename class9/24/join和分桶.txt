@@ -1,0 +1,45 @@
+一、Join操作
+	(1)等值join
+	根据员工表和部门表中部门编号相等，查询员工编号、员工名、部门名称
+	select e.empno,e.ename,d.dept from empt e join dept d on e.deptno = d.deptno;
+	(2)左外连接 left join
+	null
+	select e.empno,e.ename,d.dept from empt e left join dept d on e.deptno = d.deptno;
+	(3)右外连接 right join
+	select e.empno,e.ename,d.dept from dept d right join empt e on e.deptno = d.deptno;
+	(4)多表连接查询
+	查询员工名字、部门名称、员工地址
+	select e.ename,d.dept,l.loc_name from empt e join dept d on e.deptno = d.deptno join location l on d.loc = l.loc_no;
+	(5)笛卡尔积
+	select ename,dept from empt,dept;
+	为了避免笛卡尔积采用设置为严格模式
+	查看：set hive.mapred.mode;
+	设置：set hive.mapred.mode = strict;
+	
+二、排序
+	(1)全局排序 order by
+	查询员工信息按照工资升序排列
+	select * from empt order by sal asc;默认
+	select * from empt order by sal desc;降序
+	(2)查询员工号与员工薪水按照员工二倍工资排序
+	select empt.empno,empt.sal*2 two2sal from empt order by two2sal;
+	(3)分区排序
+	select * from empt distribute by deptno sort by empno desc;
+	
+三、分桶
+	分区表分的是数据的存储路径
+	分桶针对数据文件
+	(1)创建分桶表
+	create table emp_buck(id int,name string)
+	clustered by(id) into 4 buckets
+	row format delimited 
+	fields terminated by '\t';
+	(2)设置mapreduce数量
+	set mapreduce.job.reduces;
+	(3)设置分桶属性：
+	set hive.enforce.bucketing = true;
+	(4)导入数据
+	insert into table emp_buck select * from emp_b;
+	注意：分区分的是文件夹 分桶是分的文件
+	(5)应用
+	抽样测试

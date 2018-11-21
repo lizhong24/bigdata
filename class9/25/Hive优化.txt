@@ -1,0 +1,76 @@
+一、自定义函数
+	之前使用hive自带函数sum/avg/max/min...
+	三种自定义函数：    
+	UDF：一进一出（User-Defined-Function）    
+	UDAF:多进一出（count、max、min）    
+	UDTF:一进多出
+	（1）导入hive依赖包    hive/lib下
+	（2）上传    alt+p
+	（3）添加到hive中    add jar /root/lower.jar;
+	（4）关联create temporary function my_lower as "com.css.com.Lower";    （5）使用select ename,my_lower(ename) lowername from empt;
+
+二、Hive优化
+	1、压缩
+	（1）开启Map阶段输出压缩
+	开启输出压缩功能：
+	set hive.exec.compress.intermediate=true;
+	开启map输出压缩功能：
+	set mapreduce.map.output.compress=true;
+	设置压缩方式：
+	set mapreduce.map.output.compress.codec=org.apache.hadoop.io.compress.SnappyCodec;
+	例子：
+	select count(ename) name from empt;
+	
+	（2）开启reduce输出端压缩
+	开启最终输出压缩功能：
+	set hive.exec.compress.output=true;
+	开启最终数据压缩功能：
+	set mapreduce.output.fileoutputformat.compress=true;
+	设置压缩方式：
+	set mapreduce.output.fileoutputformat.compress.codec=org.apache.hadoop.io.
+	compress.SnappyCodec;
+	设置块压缩：
+	set mapreduce.output.fileoutputformat.compress.type=BLOCK;
+	例子：
+	insert overwrite local directory '/root/compress/rsout' select * from empt sort by empno desc;
+
+	2、存储
+	Hive存储格式：TextFile/SequenceFile/orc/Parquet
+	orc:Index Data/row Data/stripe Footer
+	压缩比：
+	orc > parquet > textFile
+	查询速度：
+	orc > textFile
+	50s > 54s
+		
+	例子：
+	create table itstar(time string,host string) row format delimited fields terminated by '\t';
+	load data local inpath '/root/itstar.log' into table itstar;
+	create table itstar_log(time string,host string) row format delimited fields terminated by '\t' stored as orc;
+	insert into itstar_log select * from itstar;
+	select count(*) from itstar;
+	select count(*) from itstar_log;
+	
+	3、Group by优化
+	分组：mr程序，map阶段把相同key的数据分发给一个reduce,一个key的量很大。
+	解决方案：
+	在map端进行聚合（combiner）
+	set hive.map.aggr=true;
+	设置负载均衡
+	set hive.groupby.skewindata=true;
+	
+	4、数据倾斜
+	（1）合理避免数据倾斜
+	合理设置map数
+	合并小文件
+	set hive.input.format=org.apache.hadoop.hive.ql.io.CombineHiveInputFormat;
+	合理设置reduce数
+	（2）解决数据倾斜
+	在map端进行聚合（combiner）
+	set hive.map.aggr=true;
+	设置负载均衡
+	set hive.groupby.skewindata=true;
+	（3）JVM重用
+	mapred-site.xml
+	mapreduce.job.jvm.numtasks
+	10~20  （插槽）

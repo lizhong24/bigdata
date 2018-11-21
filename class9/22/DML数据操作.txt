@@ -1,0 +1,76 @@
+一、分区表
+	1、创建分区表
+	hive> create table dept_partitions(depno int,dept string,loc string)
+	partitioned by(day string)
+	row format delimited fields
+	terminated by '\t';
+	
+	2、加载数据
+	load data local inpath '/root/dept.txt' into table dept_partitions;
+	注意：不能直接导入需要指定分区
+	load data local inpath '/root/dept.txt' into table dept_partitions partit
+	ion(day='1112');
+	
+	3、添加分区
+	alter table dept_partitions add partition(day='1113');
+	
+	4、单分区查询
+	select * from dept_partitions where day='1112';
+	
+	5、全查询
+	select * from dept_partitions;
+	
+	6、查询表结构
+	desc formatted dept_partitions;
+	
+	7、删除单个分区
+	alter table dept_partitions drop partition(day='1112');
+
+二、修改表
+	1、修改表名
+	alter table emptable rename to new_table_name;
+	
+	2、添加列
+	alter table dept_partitions add columns(desc string);
+	
+	3、更新列
+	alter table dept_partitions change column desc desccc int;
+	
+	4、替换
+	alter table dept_partitions replace column(desccc int);
+
+三、DML数据操作
+	1、向表中加载数据
+	load data local inpath '/root/itstar.txt' into table hunter;
+	
+	2、加载hdfs中数据
+	load data inpath '/hunter,txt' into table hunter;
+	提示：相当于剪切
+	
+	3、覆盖原有的数据
+	load data local inpath '/root/itstar.txt' overwrite into table hunter;
+	
+	4、创建分区表
+	create table hunter_partitions(id int,name string) partitioned by (month
+	string) row format
+	delimited fields terminated by '\t';
+	
+	5、向分区表插入数据
+	insert into table hunter_partitions partition(month='201811') values(1,'tongliya');
+	
+	6、按照条件查询结果存储到新表
+	create table if not exists hunter_ppp as select * from hunter_partitions where name='tongliya';
+	
+	7、创建表时加载数据
+	create table db_h(id int,name string)
+	row format
+	delimited fields
+	terminated by "\t"
+	location '';
+	
+	8、查询结果导出到本地
+	insert overwrite local directory '/root/datas/yangmi.txt' select * from hh where name='yangmi';
+	
+	bin/hive -e 'select * from hunter' > /root/hunter.txt
+	
+	> dfs -get /usr/hive/warehouse/00000 /root;

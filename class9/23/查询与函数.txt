@@ -1,0 +1,62 @@
+一、查询
+	1、配置查询头信息
+	在hive-site.xml    
+	<property>                                
+		<name>hive.cli.print.header</name> 
+		<value>true</value>
+    </property>    
+	<property>           
+		<name>hive.cli.print.current.db</name>   
+		<value>true</value>     
+	</property> 
+
+	2、基本查询
+	(1)全表查询select * from empt;
+	(2)查询指定列select empt.empno,empt.empname from empt;
+	(3)列别名select ename name,empno from empt;
+	
+	3、算数运算符
+	算数运算符	描述	Col3
+	+	相加	field3
+	­	相减	field3
+	*	相乘	field3
+	/	相除	field3
+	%	取余	field3
+	&	按位取与	field3
+					按位取或
+	^	异或	field3
+	~	按位取反	field3
+
+二、函数
+	(1)求行数countselectcount(*) from empt;
+	(2)求最大值maxselectmax(empt.sal) sal_max from empt;
+	(3)求最小值selectmin(empt.sal) sal_min from empt;
+	(4)求总和selectsum(empt.sal) sal_sum from empt;
+	(5)求平均值selectavg(empt.sal) sal_avg from empt;
+	(6)前两条select * from empt limit2;
+
+三、where语句
+	(1)工资大于1700的员工信息select * from empt where empt.sal > 1700; 
+	(2)工资小于1800的员工信息
+	select * from empt where empt.sal < 1800; 
+	(3)查询工资在1500到1800区间的员工信息select * from empt where empt.sal between 1500 and 1800; 
+	(4)查询有奖金的员工信息select *from empt where empt.comm isnotnull; 
+	(5)查询无奖金的员工信息select * from empt where empt.comm isnull; (6)查询工资是1700和1900的员工信息select * from empt where empt.sal in(1700,1900);
+
+四、Like使用like运算选择类似的值选择条件可以包含字母和数字  
+	(1)查找员工薪水第二位为6的员工信息select * from empt where empt.sal like'_6%';  _代表一个字符  %代表0个或多个字符  
+	(2)查找员工薪水中包含7的员工信息select * from empt where empt.sal like'%7%';
+	(3)rlike--select * from empt where empt.sal rlike'[7]';
+
+五、分组
+	（1）Group By语句计算empt表每个部门的平均工资selectavg(empt.sal) avg_sal,deptno from empt groupby deptno;selectavg(empt.sal) avg_sal,deptno from empt groupby deptno;
+	（2）计算empt每个部门中最高的薪水selectmax(empt.sal) max_sal,deptno from empt groupby deptno;
+	（3）求部门平均薪水大于1700的部门select deptno,avg(sal) avg_sal from empt groupby deptno having avg_sal>1700;注意：having只用于group by分组统计语句
+
+六、作业语句
+	（1）查询薪水大于1700并且部门是40 员工信息
+		select * from empt where deptno=40 and empt.sal>1700;
+	（2）查询薪水除了10部门和40部门以外的员工信息
+		select * from empt where deptno not in(10,40);
+	（3）查询薪水大于1700或者部门是40的员工信息
+		select * from empt where sal>1700 or deptno=40;

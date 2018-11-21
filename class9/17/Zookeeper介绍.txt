@@ -1,0 +1,71 @@
+1、zookeeper简介
+	动物管理员
+	Apache ZooKeeper致力于开发和维护开源服务器，实现高度可靠的分布式协调。
+2、什么是ZooKeeper？
+	ZooKeeper是一种集中式服务，用于维护配置信息，命名，提供分布式同步和提供组服务。所有这
+	些类型的服务都以分布式应用程序的某种形式使用。每次实施它们都需要做很多工作来修复不可避
+	免的错误和竞争条件。由于难以实现这些类型的服务，应用程序最初通常会吝啬它们，这使得它们
+	在变化的情况下变得脆弱并且难以管理。即使正确完成，这些服务的不同实现也会在部署应用程序
+	时导致管理复杂性。
+3、zookeeper功能
+	（1）存储数据
+	（2）监听
+4、zookeeper工作机制
+	基于观察者模式设计的分布式服务管理框架
+5、zookeeper的存储结构
+	目录树结构
+6、zookeeper应用场景
+	（1）集群统一配置管理
+	（2）集群统一命名服务
+	（3）集群统一管理
+	（4）服务器的动态上下线感知
+	（5）负载均衡
+7、安装zookeeper单机版
+	（1）下载安装包
+	（2）上传安装包到Linux
+	alt+p
+	（3）解压
+	tar -zxvf .tar
+	（4）修改配置文件
+	vi zoo.cfg
+	dataDir=/root/hd/zookeeper-3.4.10/zkData
+	（5）启动zk
+	bin/zkServer.sh start
+	(6)查看状态
+	bin/zkServer.sh status
+	(7)启动客户端
+	bin/zkCli.sh
+8、完全分布式安装
+	（1）下载安装包
+	（2）上传安装包到Linux
+	alt+p
+	（3）解压
+	tar -zxvf .tar
+	（4）修改配置文件
+	vi zoo.cfg
+	dataDir=/root/hd/zookeeper-3.4.10/zkData
+	###############cluster###############
+	server.1=hd09-1:2888:3888
+	server.2=hd09-2:2888:3888
+	server.3=hd09-3:2888:3888
+	（5）添加文件myid
+	$cd zookeeper-3.4.10/zkData
+	$touch myid
+	（6）添加内容在myid为1
+	$ vi myid
+	1
+	（7）发送zookeeper文件到其它机器
+	$ scp -r zookeeper-3.4.10 hd09-2:$PWD
+	(8)修改myid依次为2 3
+	(9)修改环境变量
+	vi /etc/profile
+	export ZOOKEEPER_HOME=/root/hd/zookeeper3.4.10
+	export PATH=$PATH:$ZOOKEEPER_HOME/bin
+	(10)生效环境变量
+	source /etc/profile
+	(11)启动zookeeper
+	zkServer.sh start
+	(12)查看状态
+	zkServer.sh status
+	(13)关闭zookeeper
+	zkServer.sh stop

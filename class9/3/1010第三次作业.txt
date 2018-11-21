@@ -1,0 +1,136 @@
+HDFS集群安装：
+
+1.准备工作
+	虚拟机(电脑8G内存 磁盘500GB)
+	3台 linux系统（1台namenode 2台datanode）
+	
+	（1）关闭防火墙
+		firewall-cmd --state 查看防火墙状态
+		systemctl stop firewalld.service 关闭防火墙
+		systemctl disable firewalld.service 禁止开机启动
+		
+	（2）远程连接（CRT）
+		
+		
+	（3）永久设置主机名
+		vi /etc/hostname
+		注意：要reboot重启生效
+		
+	（4）配置映射文件
+		vi /etc/hosts
+		
+		#127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+		#::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+		192.168.146.132 hd09-1
+		192.168.146.133 hd09-2
+		192.168.146.134 hd09-3
+
+2.安装jdk
+	（1）上传tar包
+	    SecureCRT  中  按alt + p进入sftp模式，拖拽上传文件
+		
+	（2）解压tar包
+		tar -zxvf jdk-8u144-linux-x64.tar.gz
+	
+	（3）配置环境变量
+		vi /etc/profile 
+		
+		export JAVA_HOME=/root/hd/jdk1.8.0_144
+		export PATH=$PATH:$JAVA_HOME/bin
+		
+		source /etc/profile  加载环境变量
+		
+	（4）发送到其它机器
+		scp -r hd/jdk1.8.0_144/ hd09-2:hd/jdk1.8.0_144
+		scp -r hd/jdk1.8.0_144/ hd09-3:hd/jdk1.8.0_144
+		scp -r /etc/profile hd09-2:/etc
+		scp -r /etc/profile hd09-3:/etc
+		
+		注意：加载环境变量 source /etc/profile
+		
+3.配置ssh免密登录	
+		ssh-keygen  生成密钥对
+		ssh-copy-id hd09-1
+		ssh-copy-id hd09-2
+		ssh-copy-id hd09-3
+		
+4.安装HDFS集群
+	（1）解压tar包
+		tar -zxvf hadoop-2.8.4.tar.gz
+		
+	（2）修改hadoop-env.sh
+		export JAVA_HOME=/root/hd/jdk1.8.0_144
+	
+	（3）修改core-site.xml
+		<configuration>
+			//配置hdfs
+			<property>
+				<name>fs.defaultFS</name>
+				<value>hdfs://hd09-1:9000</value>
+			</property>
+		</configuration>
+		
+	（4）修改hdfs-site.xml
+		<configuration>
+			//配置元数据存储位置
+			<property>
+				<name>dfs.namenode.name.dir</name>
+				<value>/root/hd/dfs/name</value>
+			</property>
+			//配置数据存储位置
+			<property>
+				<name>dfs.datanode.data.dir</name>
+				<value>/root/hd/dfs/data</value>
+			</property>
+		</configuration>
+		
+	（5）配置hadoop环境变量
+		vi /etc/profile
+		
+		export JAVA_HOME=/root/hd/jdk1.8.0_144
+		export HADOOP_HOME=/root/hd/hadoop-2.8.4
+		export PATH=$PATH:$JAVA_HOME/bin:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
+		
+		source /etc/profile  加载环境变量
+	
+	（6）格式化namenode
+		hadoop namenode -format
+		
+	（7）分发hadoop到其他服务器
+		scp -r ~/hd/hadoop-2.8.4/ hd09-2:/root/hd/
+		scp -r ~/hd/hadoop-2.8.4/ hd09-3:/root/hd/
+		
+	（8）分发hadoop环境变量
+		scp -r /etc/profile hd09-2:/etc
+		scp -r /etc/profile hd09-3:/etc
+	
+		注意：加载环境变量 source /etc/profile
+		
+	（9）启动namenode
+		hadoop-daemon.sh start namenode
+	
+	（10）启动datanode
+		hadoop-daemon.sh start datanode
+	
+	（11）访问namenode提供的web端口：50070
+		hd09-1:50070
+		
+	（12）访问hd09-1出错需要修改 windows电脑的 C:\Windows\System32\drivers\etc\hosts 文件 
+		在下面加上
+		192.168.146.132 hd09-1
+		192.168.146.133 hd09-2
+		192.168.146.134 hd09-3
+		即可
+		
+5.自动批量的启动脚本
+	（1）修改配置文件slaves 加入
+		hd09-2
+		hd09-3
+	
+	（2）执行启动命令
+		start-dfs.sh
+
+	
+	
+
+	

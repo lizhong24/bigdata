@@ -1,0 +1,29 @@
+客户端的命令行操作
+（1）启动客户端
+	zkCli.sh
+（2）查看帮助
+	help
+（3）查看当前znode所包含的内容
+	ls /
+（4）创建节点
+	create /hello 18
+（5）创建短暂znode
+	create -e /itstar tom
+（6）创建带序号znode
+	create -s /bigdata tom
+（7）创建短暂带序号
+	create -e -s /bigdata tom
+（8）查看此节点的详细信息
+	ls2 /
+（9）获得节点值监听
+	get /hello watch
+（10）监听路径
+	ls / watch
+（11）修改znode数据
+	set /hello iiiii
+（12）删除节点
+	delete /hello
+（13）递归删除
+	rmr /delireba
+（14）查看节点状态信息
+	stat /

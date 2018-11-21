@@ -1,0 +1,65 @@
+1、Hive安装
+	1）下载安装包
+	http://hive.apache.org/downloads.html
+	2）上传安装包
+	alt+p
+	3) 解压
+	tar -zxvf apache-hive-1.2.2-bin.tar.gz -C hd/	
+	4) 解压后的包重命名
+	mv apache-hive-1.2.2-bin/ hive
+	5) 修改配置文件
+	mv hive-env.sh.template hive-enc.sh
+	vi hive-env.sh
+	HADOOP_HOME=/root/hd/hadoop-2.8.4
+	export HIVE_CONF_DIR=/root/hd/hive/conf
+	6) 启动hive前启动hadoop集群
+	start-dfs.sh
+	start-yarn.sh
+	# start-all.sh # 不建议使用
+	7) 在hdfs上创建文件夹
+	hdfs dfs -mkdir /tmp
+	hdfs dfs -mkdir -p /user/hive/warehouse/
+	8) 启动hive
+	bin/hive
+
+2、hive测试
+	1）查看数据库
+	show databases;
+	2) 使用数据库
+	use default;
+	3) 查看表
+	show tables;
+	4) 创建表
+	create table student(id int,name string);
+	5）插入数据
+	insert into student values(1,"tom");
+	6) 查询
+	select * from student;
+	7) 删除表
+	drop table student;
+	8) 退出终端
+	quit;
+	
+3、SecureCRT使用hive命令行不能回退
+	选择工具栏中的【选项(O)】-【会话选项】-【终端】-【仿真】-【终端】，
+	下拉选项选择【Linux】，【确定】即可。
+	这样修改完在hive命令行中输入命令就可以自由增删改了。
+
+4、操作数据
+	1）准备数据
+	vi student.txt
+	1	tom
+	2	zhangsan
+	3	lisi
+	4	zhangsanfeng
+	5	xiexiaofeng
+	2)创建hive表
+	create table student(id int,name string)
+	row format
+	delimited fields
+	terminated by "\t";
+	3)加载数据
+	load data local inpath '/root/student.txt' into table student;
+	
+	
+
