@@ -1,0 +1,288 @@
+一、Hbase概述
+	Apache HBase™是Hadoop数据库，是一个分布式，可扩展的大数据存储。
+	当您需要对大数据进行随机，实时读/写访问时，请使用Apache HBase™。该项目的目标是托
+	管非常大的表 - 数十亿行X百万列 - 在商品硬件集群上。Apache HBase是一个开源的，分布式
+	的，版本化的非关系数据库，模仿Google的Bigtable： Chang等人的结构化数据分布式存储系
+	统。正如Bigtable利用Google文件系统提供的分布式数据存储一样，Apache HBase在Hadoop和
+	HDFS之上提供类似Bigtable的功能。
+	
+	2006年-google发表了bigtable的白皮书
+	2006年-开始开发hbase
+	2008年-hbase正式成为apache的子项目
+	2010年-正式成为apache的顶级项目
+二、Hbase架构
+
+三、Hbase集群安装部署
+	集群配置：
+		zk集群3台
+		hadoop集群3台
+		hbase集群3台
+		
+	1、上传hbase-1.3.0-bin.tar.gz到/root下
+	
+	2、解压
+	cd ~
+	tar -zxvf hbase-1.3.0-bin.tar.gz -C hd
+	
+	3、修改配置文件
+	cd /root/hd/hbase-1.3.0/conf
+	（1）hbase-env.sh--修改环境变量
+	vi hbase-env.sh
+	export JAVA_HOME=/root/hd/jdk1.8.0_144   # 修改java环境变量
+	export HBASE_MANAGES_ZK=false    # 关闭hbase自带的Zookeeper集群，换成自己集群的Zookeeper集群
+	
+	（2）hbase-site.xml--加入配置信息（在<configuration>标签内）
+	vi hbase-site.xml 
+	<!-- 设置namenode所在位置 通过rootdir设置 也就是设置hdfs中存放的路径 -->
+	<property>
+		<name>hbase.rootdir</name>
+		<value>hdfs://hd09-1:9000/hbase</value>
+	</property>
+	
+	<!-- 是否开启集群 -->
+	<property>
+		<name>hbase.cluster.distributed</name>
+		<value>true</value>
+	</property>
+	
+	<!-- 0.98 后的新变动，之前版本没有.port,默认端口为 60000 -->
+	<property>
+		<name>hbase.master.port</name>
+		<value>16000</value>
+	</property>
+	
+	<!-- zookeeper集群的位置 -->
+	<property>
+		<name>hbase.zookeeper.quorum</name>
+		<value>hd09-1:2181,hd09-2:2181,hd09-3:2181</value>
+	</property>
+	
+	<!-- hbase的元数据信息存储在zookeeper的位置 -->
+	<property>
+		<name>hbase.zookeeper.property.dataDir</name>
+		<value>/root/hd/zookeeper-3.4.10/zkData</value>
+	</property>
+	
+	（3）regionservers--加入从节点
+	vi regionservers
+	hd09-1
+	hd09-2
+	hd09-3
+	
+	4、解决依赖问题
+	（1）删除hbase自带的jar包
+	cd /root/hd/hbase-1.3.0/lib
+	rm -rf hadoop-*
+	rm -rf zookeeper-3.4.6.jar
+
+	（2）进入放置zookeeper和hadoop的依赖包的文件夹，通过
+	cp ./* /root/hd/hbase-1.3.0/lib/
+	把相关版本的zookeeper和hadoop的依赖包导入到hbase/lib下
+	
+	（3）软连接hadoop配置
+	ln -s /root/hd/hadoop-2.8.4/etc/hadoop/core-site.xml /root/hd/hbase-1.3.0/conf/
+	ln -s /root/hd/hadoop-2.8.4/etc/hadoop/hdfs-site.xml /root/hd/hbase-1.3.0/conf/
+	
+	5、分发hbase安装文件到其他节点
+	cd /root/hd
+	scp -r hbase-1.3.0/ hd09-2:/root/hd
+	scp -r hbase-1.3.0/ hd09-3:/root/hd
+	
+	6、启动集群
+	首先要启动hdfs集群，yarn集群和zookeeper集群（其中括号内的是启动命令所在的节点主机名，不包含在命令中）
+	start-dfs.sh	（hd09-1）
+	start-yarn.sh	（hd09-1）
+	zkServer.sh start	（hd09-1，hd09-2，hd09-3）
+	
+	cd /root/hd/hbase-1.3.0
+	bin/hbase-daemon.sh start master	（hd09-1）
+	bin/hbase-daemon.sh start regionserver	（hd09-2，hd09-3）
+	
+	7、启动终端
+	cd /root/hd/hbase-1.3.0
+	bin/hbase shell
+
+	8、ui界面
+	http://hd09-1:16010/master-status
+	
+四、HBase shell
+	1）查看服务器状态
+	status 'hd09-01'
+	2）查看当前有哪些表
+	list
+	3）查看帮助
+	help
+
+五、HBase表操作
+	1）创建表
+	create '表名','列族'
+	2）全表扫描
+	scan '表名'
+	rowkey:行键：唯一 不重复
+	timestamp:时间戳
+	cell:单元格 数据存放位置
+	column familly:列族，列族下包含多个列
+	column：列
+	3）向表中插入数据
+	put '表名'，'rowkey','列族：列名'，'值'
+	4）覆盖数据
+	在hbase中没有修改，但是可以覆盖只要保持rowkey,列族，列相同即可进行覆盖操作
+	5）筛选扫描
+	scan 'user',{STARTROW =>'101',STOPROW => '101'}
+	6）查看表结构
+	describe '表名'
+	7）变更表信息
+	alter '表名',{NAME => 'info',VERSIONS => '3'}
+	8）删除数据
+	根据rowkey删除
+	deleteall '表名'，'rowkey'
+	根据具体的列删除
+	delete '表名'，'rowkey','列族：列'
+	9）清空表
+	truncate '表名'
+	10）删除表
+	第一步：设置不可用状态
+	disable '表名'
+	第二部：删除该表
+	drop '表名'
+	11）统计表中数据行数
+	count '表名'
+	12）查看指定rowkey值
+	get '表名'，'rowkey'
+	13）查看具体列值
+	get '表名','rowkey','列族：列'
+
+六、HBase-MR
+官方HBase-Mapreduce
+需求1：对一张表的rowkey进行计数
+	1）导入环境变量
+	export HBASE_HOME=/root/hd/hbase-1.3.0
+	export HADOOP_HOME=/root/hd/hadoop-2.8.4
+	export HADOOP_CLASSPATH=`${HBASE_HOME}/bin/hbase mapredcp`
+	可以添加到：hbase-env.sh
+	
+	2）启动HBase-mr任务
+	cd /root/hd/hbase-1.3.0
+	/root/hd/hadoop-2.8.4/bin/yarn jar lib/hbase-server-1.3.0.jar rowcounter emp
+	
+需求2：本地数据导入到HBase中
+	思路？HBase底层存储是hdfs,把数据先导入到hdfs
+	HBase对应创建一张表
+	利用mr导入数据到表中
+	
+	1）在hdfs中创建文件夹 导入本地数据	
+	hdfs dfs -mkdir /lovein
+	hdfs dfs -put /root/love.tsv /lovein
+	
+	2）创建表
+	create 'love','info'
+	
+	3）导入操作
+	cd /root/hd/hbase-1.3.0
+	/root/hd/hadoop-2.8.4/bin/yarn jar lib/hbase-server-1.3.0.jar importtsv -Dimporttsv.columns=HBASE_ROW_KEY,info:name,info:description love hdfs://hd09-1:9000/lovein/
+
+自定义HBase-mr	
+需求3：将HBase中love表进行指定列的筛选然后倒入到lovemr表
+	1）构建Mapper类，读取love表中数据
+	2）构建Reducer类，将love表中数据写入到lovemr表中
+	3）构建driver驱动类
+	4） 打包 放入集群中运行这个任务
+
+	5）创建表
+	create 'lovemr','info'
+	
+	6）导入操作	
+	进入到HbaseTest-1.0-SNAPSHOT.jar包所在目录
+	/root/hd/hadoop-2.8.4/bin/yarn jar HbaseTest-1.0-SNAPSHOT.jar com.hbase.mr.LoveDriver
+
+需求4：HDFS中的数据写入到HBase中
+	思路：
+    1）构建Mapper 来读取hdfs中的数据
+    2）构建Reducer
+    3）驱动类
+    4）打包运行
+    5）测试	
+	
+	6）在hdfs中创建文件夹 导入本地数据	
+	hdfs dfs -mkdir /lovehbase
+	hdfs dfs -put /root/love.tsv /lovehabse
+	
+	7）创建表
+	create 'lovehdfs','info'
+
+	8）写入操作	
+	进入到HbaseTest-1.0-SNAPSHOT.jar包所在目录
+	/root/hd/hadoop-2.8.4/bin/yarn jar HbaseTest-1.0-SNAPSHOT.jar com.hbase.mr2.LoveDriver
+
+七、Hbase­优化方案
+	1、预分区设计
+	真正存储数据的是region要维护一个区间段的rowkey      startRow~endRowkey
+	
+	-》手动设置预分区
+	create 'user_p','info','partition',SPLITS => ['101','102','103','104']
+	存在-∞ +∞
+	第一个分区 -∞ ~ 101
+	第二个分区 101~102
+	第三个分区 102~103
+	第四个分区 103~104
+	第五个分区 104 ~ +∞
+	
+	-》生成16进制序列预分区
+	create 'user_p2','info','partition',{NUMREGIONS => 15,SPLITALGO => 'HexStringSplit'}
+	
+	-》按照文件中设置的规则设置预分区
+	create 'user_p4','partition',SPLITS_FILE => 'splits.txt'
+	
+	2、rowkey设计
+	一条数据的唯一标识是rowkey,此rowkey存储在哪个分区取决于属于哪个预分区内。
+	为什么要设计rowkey?数据倾斜
+	为了防止出现数据倾斜
+	（1）生成随机数/hash/散列值
+	例如：rowkey是101 变成：dd21231dqwdqd123131d112131
+	102 变成：wqdqdq212131dqdwqwdqdw1d21
+	
+	（2）字符串反转
+	2018120800011 1100080218102
+	2018120800012 2100080218102
+	
+	（3）字符串拼接
+	2018120800011_a12e
+	2018120800012_odd12c
+	101~105 105~100000
+	
+	3、hbase优化
+	（1）内存优化
+	一般分配70%内存给Hbase的java堆
+	不建议分配非常大的堆内存
+	一般设置为 16~48G内存即可
+	设置：export HADOOP_PORTMAP_OPTS="-Xmx512m $HADOOP_PORTMAP_OPTS"
+	注意：etc/hadoop下 hadoop-env.sh
+	
+	（2）基础优化
+	-》优化DataNode
+	最大文件打开数
+	hdfs-site.xml
+	属性：dfs.datanode.max.transfer.threads
+	默认值：4096 设置大于4096
+	
+	-》优化延迟高的数据操作等待时间
+	hdfs-site.xml
+	属性：dfs.image.transfer.timeout
+	默认：60000毫秒
+	调大
+	
+	-》数据写入效率
+	压缩
+	属性：mapreduce.map.output.compress
+	值：org.apache.hadoop.io.compress.GzipCodec
+	
+	-》优化Hstore的文件大小
+	属性：hbase.hregion.max.filesize
+	默认值：10GB
+	调小
+
+	
+	
+
+	
+	

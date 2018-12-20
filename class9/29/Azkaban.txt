@@ -1,0 +1,207 @@
+一、Azkaban概述
+	Azkaban是一个分布式工作流管理器，在LinkedIn上实现，以解决Hadoop作业依赖性问题。我们
+	有需要按顺序运行的工作，从ETL工作到数据分析产品。
+	特点：
+	1）给用户提供了一个非常友好的可视化界面->web界面
+	2)非常方便的上传工作流-》打成压缩包
+	3）设置任务间的关系
+	4）权限设置-》删库到跑路
+	5）模块化
+	6）随时停止和启动任务
+	7）可以查看日志记录
+	
+二、与Oozie对比
+	和Oozie相对比，azkaban是一个轻量级调度工具。
+	企业应用的功能并非小众的功能可以使用Azkaban。
+	1）功能
+	两个任务流调度器可以调度使用mr,java,脚本工作流任务
+	都可以进行定时调度...
+	2)使用
+	az直接传参
+	Oozie直接传参，支持EL表达式...
+	3)定时
+	az定时执行任务基于时间
+	Oozie任务基于时间和数据
+	4）资源
+	az有严格的权限控制
+	Oozie无严格权限控制
+	
+三、Azkaban安装部署
+	准备工作
+	1）快照
+	2）上传安装包
+	cd /root/hd
+	mkdir azkaban
+	上传安装包到/root/hd/azkaban目录下
+	3)解压重命名
+	cd azkaban/
+	解压
+	tar -zxvf azkaban-web-server-2.5.0.tar.gz 
+	tar -zxvf azkaban-executor-server-2.5.0.tar.gz 
+	tar -zxvf azkaban-sql-script-2.5.0.tar.gz 
+	删除安装包
+	rm -f azkaban-executor-server-2.5.0.tar.gz 
+	rm -f azkaban-web-server-2.5.0.tar.gz 
+	rm -f azkaban-sql-script-2.5.0.tar.gz 
+	重命名
+	mv azkaban-executor-2.5.0/ executor
+	mv azkaban-web-2.5.0/ server
+	4)mysql中azkaban脚本导入
+	create database azkaban;
+	use azkaban;
+	source /root/hd/azkaban/azkaban-2.5.0/create-all-sql-2.5.0.sql
+	
+	安装部署
+	1）创建SSL(安全连接)配置
+	服务器需要一个证书
+	cd server
+	keytool -keystore keystore -alias jetty -genkey -keyalg RSA
+	
+	密码：123456
+	国家：CN
+	yes
+	
+	123456
+	
+	2）时间同步设置
+	生成时区文件
+	tzselect生成
+	5->9->1->yes
+
+	拷贝时区文件
+	cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+	集群时间同步
+	crt中开启交互窗口 发送
+	sudo date -s '2018-11-29 20:22:39'
+	
+	3）修改配置文件	
+	cd /root/hd/azkaban/server/conf
+	
+	vi azkaban.properties
+	
+	#Azkaban Personalization Settings
+	azkaban.name=Test
+	azkaban.label=My Local Azkaban
+	azkaban.color=#FF3601
+	azkaban.default.servlet.path=/index
+	web.resource.dir=web/
+	default.timezone.id=Asia/Shanghai
+
+	#Azkaban UserManager class
+	user.manager.class=azkaban.user.XmlUserManager
+	user.manager.xml.file=conf/azkaban-users.xml
+
+	#Loader for projects
+	executor.global.properties=conf/global.properties
+	azkaban.project.dir=projects
+
+	database.type=mysql
+	mysql.port=3306
+	mysql.host=hd09-1
+	mysql.database=azkaban
+	mysql.user=root
+	mysql.password=root
+	mysql.numconnections=100
+
+	# Velocity dev mode
+	velocity.dev.mode=false
+
+	# Azkaban Jetty server properties.
+	jetty.maxThreads=25
+	jetty.ssl.port=8443
+	jetty.port=8081
+	jetty.keystore=keystore
+	jetty.password=123456
+	jetty.keypassword=123456
+	jetty.truststore=keystore
+	jetty.trustpassword=123456
+
+	# Azkaban Executor settings
+	executor.port=12321
+
+	# mail settings
+	mail.sender=
+	mail.host=
+	job.failure.email=
+	job.success.email=
+
+	lockdown.create.projects=false
+
+	cache.directory=cache
+
+	
+	vi azkaban-users.xml
+	
+	<azkaban-users>
+			<user username="azkaban" password="azkaban" roles="admin" groups="azkaban" />
+			<user username="metrics" password="metrics" roles="metrics"/>
+			<user username="admin" password="admin" roles="admin,metrics"/>
+			<role name="admin" permissions="ADMIN" />
+			<role name="metrics" permissions="METRICS"/>
+	</azkaban-users>
+	
+	cd /root/hd/azkaban/executor/conf
+
+	vi azkaban.properties
+	
+	#Azkaban
+	default.timezone.id=Asia/Shanghai
+
+	# Azkaban JobTypes Plugins
+	azkaban.jobtype.plugin.dir=plugins/jobtypes
+
+	#Loader for projects
+	executor.global.properties=conf/global.properties
+	azkaban.project.dir=projects
+
+	database.type=mysql
+	mysql.port=3306
+	mysql.host=hd09-1
+	mysql.database=azkaban
+	mysql.user=root
+	mysql.password=root
+	mysql.numconnections=100
+
+	# Azkaban Executor settings
+	executor.maxThreads=50
+	executor.port=12321
+	executor.flow.threads=30
+	
+	4）启动web服务器
+	cd /root/hd/azkaban/server
+	bin/azkaban-web-start.sh
+	
+	5)启动执行器
+	cd /root/hd/azkaban/executor
+	bin/azkaban-executor-start.sh
+	
+	6)访问web
+	https://192.168.146.132:8443
+
+四、应用
+	1、command类型单一任务案例
+	#command.job
+	type=command
+	command=echo 'hello world'
+	
+	2、command类型多个任务案例
+	#f.job
+	type=command
+	command=echo 'hello'
+	
+	#b.job
+	type=command
+	dependencies=f
+	command=echo 'world'
+	
+	3、azkaban操作HDFS任务
+	#hdfs.job
+	type=command
+	command=/root/hd/hadoop-2.8.4/bin/hdfs dfs -mkdir /azkaban
+	
+	4、azkaban启动集群任务
+	#start.job
+	type=command
+	command=/root/hd/hadoop-2.8.4/sbin/start-dfs.sh
+
+	

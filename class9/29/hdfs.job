@@ -1,0 +1,2 @@
+type=command
+command=/root/hd/hadoop-2.8.4/bin/hdfs dfs -mkdir /azkaban

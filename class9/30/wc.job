@@ -1,0 +1,3 @@
+# wc.job
+type=command
+command=/root/hd/hadoop-2.8.4/bin/hadoop jar hadoop-mapreduce-examples-2.8.4.jar wordcount /azwc/in /azwc/out

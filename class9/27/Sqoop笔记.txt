@@ -1,0 +1,50 @@
+一、Sqoop概述
+	1）官网
+	http://sqoop.apache.org/
+	2）场景
+	传统型缺点，分布式存储。把传统型数据库数据迁移。
+	Apache Sqoop（TM）是一种用于在Apache Hadoop和结构化数据存储（如关系数据库）之间高效传输批量数据的工具。
+
+二、Sqoop安装部署
+	1）下载安装包
+	2）解压
+	tar -zxvf sqoop-1.4.7.bin__hadoop-2.6.0.tar.gz
+	3)修改配置	
+	mv sqoop-1.4.7.bin__hadoop-2.6.0 sqoop
+	cd sqoop/conf
+	mv sqoop-env-template.sh sqoop-env.sh
+	
+	vi sqoop-env.sh
+	export HADOOP_COMMON_HOME=/root/hd/hadoop-2.8.4
+	export HADOOP_MAPRED_HOME=/root/hd/hadoop-2.8.4
+	export HIVE_HOME=/root/hd/hive
+	export ZOOCFGDIR=/root/hd/zookeeper-3.4.10/conf
+	4）发送mysql驱动到sqoop/lib下
+	5）检测是否安装成功
+	bin/sqoop help
+
+三、Sqoop的import命令
+	1）数据从mysql中导入到hdfs当中
+	bin/sqoop import --connect jdbc:mysql://hd09-1:3306/sq --username root --password root --table user --target-dir /sqoop/datas
+	--delete-target-dir --num-mappers 1 --fields-terminated-by "\t"
+	2）数据mysql中导入到hdfs当中进行筛选
+	bin/sqoop import --connect jdbc:mysql://hd09-1:3306/sq --username root --password root --target-dir /sqoop/selectdemo --delete-target-dir
+	--num-mappers 1 --fields-terminated-by "\t" --query 'select * from user where id<=1 and $CONDITIONS'
+	3）通过where筛选
+	bin/sqoop import --connect jdbc:mysql://hd09-1:3306/sq --username root --password root --target-dir /sqoop/selectdemo2 --delete-target-dir
+	--num-mappers 1 --fields-terminated-by "\t" --table user --where "id<=1"
+	4）mysql导入到hive
+	需要先创建hive表
+	bin/sqoop import --connect jdbc:mysql://hd09-1:3306/sq --username root --password root --table user1 --num-mappers 1
+	--hive-import --fields-terminated-by "\t" --hive-overwrite --hive-table user_sqoop
+
+四、问题：hiveconf
+	解决：
+	vi ~/.bash_profile
+	export HADOOP_CLASSPATH=$HADOOP_CLASSPATH:/root/hd/hive/lib/*
+	mysql权限问题：
+	grant all privileges on *.* to root@'%' identified by "root";
+	flush privileges;
+	
+	
+	

@@ -1,0 +1,164 @@
+一、Hbase概述
+	Apache HBase™是Hadoop数据库，是一个分布式，可扩展的大数据存储。
+	当您需要对大数据进行随机，实时读/写访问时，请使用Apache HBase™。该项目的目标是托
+	管非常大的表 - 数十亿行X百万列 - 在商品硬件集群上。Apache HBase是一个开源的，分布式
+	的，版本化的非关系数据库，模仿Google的Bigtable： Chang等人的结构化数据分布式存储系
+	统。正如Bigtable利用Google文件系统提供的分布式数据存储一样，Apache HBase在Hadoop和
+	HDFS之上提供类似Bigtable的功能。
+	
+	2006年-google发表了bigtable的白皮书
+	2006年-开始开发hbase
+	2008年-hbase正式成为apache的子项目
+	2010年-正式成为apache的顶级项目
+二、Hbase架构
+
+三、Hbase集群安装部署
+	集群配置：
+		zk集群3台
+		hadoop集群3台
+		hbase集群3台
+		
+	1、上传hbase-1.3.0-bin.tar.gz到/root下
+	
+	2、解压
+	cd ~
+	tar -zxvf hbase-1.3.0-bin.tar.gz -C hd
+	
+	3、修改配置文件
+	cd /root/hd/hbase-1.3.0/conf
+	（1）hbase-env.sh--修改环境变量
+	vi hbase-env.sh
+	export JAVA_HOME=/root/hd/jdk1.8.0_144   # 修改java环境变量
+	export HBASE_MANAGES_ZK=false    # 关闭hbase自带的Zookeeper集群，换成自己集群的Zookeeper集群
+	
+	（2）hbase-site.xml--加入配置信息（在<configuration>标签内）
+	vi hbase-site.xml 
+	<!-- 设置namenode所在位置 通过rootdir设置 也就是设置hdfs中存放的路径 -->
+	<property>
+		<name>hbase.rootdir</name>
+		<value>hdfs://hd09-1:9000/hbase</value>
+	</property>
+	
+	<!-- 是否开启集群 -->
+	<property>
+		<name>hbase.cluster.distributed</name>
+		<value>true</value>
+	</property>
+	
+	<!-- 0.98 后的新变动，之前版本没有.port,默认端口为 60000 -->
+	<property>
+		<name>hbase.master.port</name>
+		<value>16000</value>
+	</property>
+	
+	<!-- zookeeper集群的位置 -->
+	<property>
+		<name>hbase.zookeeper.quorum</name>
+		<value>hd09-1:2181,hd09-2:2181,hd09-3:2181</value>
+	</property>
+	
+	<!-- hbase的元数据信息存储在zookeeper的位置 -->
+	<property>
+		<name>hbase.zookeeper.property.dataDir</name>
+		<value>/root/hd/zookeeper-3.4.10/zkData</value>
+	</property>
+	
+	（3）regionservers--加入从节点
+	vi regionservers
+	hd09-1
+	hd09-2
+	hd09-3
+	
+	4、解决依赖问题
+	（1）删除hbase自带的jar包
+	cd /root/hd/hbase-1.3.0/lib
+	rm -rf hadoop-*
+	rm -rf zookeeper-3.4.6.jar
+
+	（2）进入放置zookeeper和hadoop的依赖包的文件夹，通过
+	cp ./* /root/hd/hbase-1.3.0/lib/
+	把相关版本的zookeeper和hadoop的依赖包导入到hbase/lib下
+	
+	（3）软连接hadoop配置
+	ln -s /root/hd/hadoop-2.8.4/etc/hadoop/core-site.xml /root/hd/hbase-1.3.0/conf/
+	ln -s /root/hd/hadoop-2.8.4/etc/hadoop/hdfs-site.xml /root/hd/hbase-1.3.0/conf/
+	
+	5、分发hbase安装文件到其他节点
+	cd /root/hd
+	scp -r hbase-1.3.0/ hd09-2:/root/hd
+	scp -r hbase-1.3.0/ hd09-3:/root/hd
+	
+	6、启动集群
+	首先要启动hdfs集群，yarn集群和zookeeper集群（其中括号内的是启动命令所在的节点主机名，不包含在命令中）
+	start-dfs.sh	（hd09-1）
+	start-yarn.sh	（hd09-1）
+	zkServer.sh start	（hd09-1，hd09-2，hd09-3）
+	
+	cd /root/hd/hbase-1.3.0
+	bin/hbase-daemon.sh start master	（hd09-1）
+	bin/hbase-daemon.sh start regionserver	（hd09-2，hd09-3）
+	
+	7、启动终端
+	cd /root/hd/hbase-1.3.0
+	bin/hbase shell
+
+	8、ui界面
+	http://hd09-1:16010/master-status
+	
+四、HBase shell
+	1)查看服务器状态
+	status 'hd09-01'
+	2)查看当前有哪些表
+	list
+	3)查看帮助
+	help
+
+四、HBase表操作
+	1）创建表
+	create '表名','列族'
+	2）全表扫描
+	scan '表名'
+	rowkey:行键：唯一 不重复
+	timestamp:时间戳
+	cell:单元格 数据存放位置
+	column familly:列族，列族下包含多个列
+	column：列
+	3）向表中插入数据
+	put '表名'，'rowkey','列族：列名'，'值'
+	4）覆盖数据
+	在hbase中没有修改，但是可以覆盖只要保持rowkey,列族，列相同即可进行覆盖操作
+	5）筛选扫描
+	scan 'user',{STARTROW =>'101',STOPROW => '101'}
+	6）查看表结构
+	describe '表名'
+	7）变更表信息
+	alter '表名',{NAME => 'info',VERSIONS => '3'}
+	8)删除数据
+	根据rowkey删除
+	deleteall '表名'，'rowkey'
+	根据具体的列删除
+	delete '表名'，'rowkey','列族：列'
+	9）清空表
+	truncate '表名'
+	10）删除表
+	第一步：设置不可用状态
+	disable '表名'
+	第二部：删除该表
+	drop '表名'
+	11）统计表中数据行数
+	count '表名'
+	12）查看指定rowkey值
+	get '表名'，'rowkey'
+	13)查看具体列值
+	get '表名','rowkey','列族：列'
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	

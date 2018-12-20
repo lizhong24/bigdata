@@ -1,0 +1,109 @@
+一、Sqoop概述
+	1）官网
+	http://sqoop.apache.org/
+	2）场景
+	传统型缺点，分布式存储。把传统型数据库数据迁移。
+	Apache Sqoop（TM）是一种用于在Apache Hadoop和结构化数据存储（如关系数据库）之间高效传输批量数据的工具。
+
+二、Sqoop安装部署
+	1）下载安装包
+	2）解压
+	tar -zxvf sqoop-1.4.7.bin__hadoop-2.6.0.tar.gz
+	3)修改配置	
+	mv sqoop-1.4.7.bin__hadoop-2.6.0 sqoop
+	cd sqoop/conf
+	mv sqoop-env-template.sh sqoop-env.sh
+	
+	vi sqoop-env.sh
+	export HADOOP_COMMON_HOME=/root/hd/hadoop-2.8.4
+	export HADOOP_MAPRED_HOME=/root/hd/hadoop-2.8.4
+	export HIVE_HOME=/root/hd/hive
+	export ZOOCFGDIR=/root/hd/zookeeper-3.4.10/conf
+	4）发送mysql驱动到sqoop/lib下
+	5）检测是否安装成功
+	bin/sqoop help
+
+三、Sqoop的import命令
+	1）数据从mysql中导入到hdfs当中
+	bin/sqoop import --connect jdbc:mysql://hd09-1:3306/sq --username root --password root --table user --target-dir /sqoop/datas
+	--delete-target-dir --num-mappers 1 --fields-terminated-by "\t"
+	2）数据mysql中导入到hdfs当中进行筛选
+	bin/sqoop import --connect jdbc:mysql://hd09-1:3306/sq --username root --password root --target-dir /sqoop/selectdemo --delete-target-dir
+	--num-mappers 1 --fields-terminated-by "\t" --query 'select * from user where id<=1 and $CONDITIONS'
+	3）通过where筛选
+	bin/sqoop import --connect jdbc:mysql://hd09-1:3306/sq --username root --password root --target-dir /sqoop/selectdemo2 --delete-target-dir
+	--num-mappers 1 --fields-terminated-by "\t" --table user --where "id<=1"
+	4）mysql导入到hive
+	需要先创建hive表
+	bin/sqoop import --connect jdbc:mysql://hd09-1:3306/sq --username root --password root --table user1 --num-mappers 1
+	--hive-import --fields-terminated-by "\t" --hive-overwrite --hive-table user_sqoop
+
+四、问题：hiveconf
+	解决：
+	vi ~/.bash_profile
+	export HADOOP_CLASSPATH=$HADOOP_CLASSPATH:/root/hd/hive/lib/*
+	mysql权限问题：
+	grant all privileges on *.* to root@'%' identified by "root";
+	flush privileges;
+	
+五、Sqoop的export命令
+	需求：Hive/hdfs的数据导出到mysql
+	1）根据hive中的字段创建mysql表
+	2）编写sqoop启动命令
+	bin/sqoop export --connect jdbc:mysql://hd09-1:3306/sq --username root -
+	-password root --table user1 --num-mappers 1 --export-dir /user/hive/ware
+	house/user_sqoop --input-fields-terminated-by "\t"
+	3)mysql中查看数据是否导入
+
+六、Sqoop打包脚本的使用
+	1）创建文件夹
+	mkdir sqoopjob
+	2）创建文件脚本
+	vi job_hdfs2mysql.opt
+	export
+	--connect
+	jdbc:mysql://hd09-1:3306/sq
+	--username
+	root
+	--password
+	root
+	--table
+	user1
+	--num-mappers
+	1
+	--export-dir
+	/user/hive/warehouse/user_sqoop
+	--input-fields-terminated-by
+	"\t"
+	注意：一行命令 一行值
+	3）执行脚本文件
+	bin/sqoop --options-file /root/sqoopjob/job_hdfs2mysql.opt
+
+七、sqoop常用命令
+	命令 说明
+	import 			   将数据导入到集群
+	export			   将集群数据导出
+	codegen			   将某数据库中表生成javaBean并打包为jar
+	eval 			   查看sql执行结果
+	create­hive­table  创建hive表
+	import­all­tables  导入某个数据库中所有表到hdfs中
+	list­tables		   列出某个数据库下的所有表
+	merge			   将hdfs中不同目录下的数据合并在一起
+	version V		   查看sqoop版本
+	help 			   查看帮助信息
+
+八、sqoop常用参数
+	参数 说明
+	–connect 			 连接关系型数据库URL
+	–connection­manager  指定连接管理类
+	–driver 			 JDBC的driver class
+	–username			 连接数据库的用户名
+	–password			 连接数据库的密码
+	–verbose			 在控制台中打印详细信息
+	–help				 查看帮助
+	–hive­import		 将关系型数据库导入到hive表中
+	–hive­overwrite		 覆盖掉hive表中已存在的数据
+	–create­hive­table	 创建hive表
+	–hive­table			 接入hive表
+	–table				 指定关系型数据库的表名	
+

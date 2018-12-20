@@ -1,0 +1,51 @@
+一、Flume概述
+	1)官网地址
+	http://flume.apache.org/
+	2）日志采集工具	Flume是一种分布式，可靠且可用的服务，用于有效地收集，聚合和移动大量日志数据。它具有基于流数据流的简单灵活的架构。它具有可靠的可靠性机制和许多故障转移和恢复机制，具有强大的容错能力。它使用简单的可扩展数据模型，允许在线分析应用程序。
+	3）为什么需要flume
+	数据从哪里来？
+	-》爬虫
+	-》日志数据 flume
+	-》传统型数据库 sqoop
+	4)flume架构
+	source:数据源
+	产生数据流，同时source将产生的数据流传输到channel
+	channel:传输通道
+	用于桥接Source和sinks
+	sinks:下沉
+	从channel收集数据
+	event:传输单元
+	Flume数据传传输的基本单元，以事件的形式将数据送往目的地。
+
+二、Flume安装部署
+	1）下载安装包
+	http://archive.apache.org/dist/flume/1.6.0/
+	2）上传到linux
+	alt+p
+	3）解压
+	tar -zxvf .tar
+	4)重命名
+	mv flume-env.sh.template flume-env.sh
+	5)修改配置文件
+	export JAVA_HOME=/root/hd/jdk1.8.0_141
+
+三、Flume监听端口
+	1）安装telnet
+	yum search telnet
+	yum intsall telnet.x86_64
+	2)写配置文件
+	flumejob_telnet.conf
+	3)启动
+	bin/flume-ng agent --conf conf/ --name a1 --conf-file conf/flumejob_telne
+	t.conf -Dflume.root.logger=INFO,console
+	4)发送数据
+	telnet localhost 44444
+	5)查看
+
+四、实时的采集文件到HDFS
+	启动
+	bin/flume-ng agent --conf conf/ --name a1 --conf-file conf/flumejob_hdfs.conf
+
+五、实时监听文件夹
+	启动
+	bin/flume-ng agent --conf conf/ --name a1 --conf-file conf/flumejob_dir.conf
