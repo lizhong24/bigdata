@@ -17,7 +17,7 @@ public class WordCountDriver {
 		TopologyBuilder builder = new TopologyBuilder();
 		//2.指定设置
 		builder.setSpout("WordCountSpout", new WordCountSpout(), 1);
-		builder.setBolt("WordCountSplitBolt", new WordCountSplitBolt(), 4).fieldsGrouping("WordCountSpout", new Fields("itstar"));
+		builder.setBolt("WordCountSplitBolt", new WordCountSplitBolt(), 4).fieldsGrouping("WordCountSpout", new Fields("wordcount"));
 		builder.setBolt("WordCountBolt", new WordCountBolt(), 2).fieldsGrouping("WordCountSplitBolt", new Fields("word"));
 		
 		//3.创建配置信息

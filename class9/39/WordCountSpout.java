@@ -47,7 +47,7 @@ public class WordCountSpout extends BaseRichSpout {
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
 		//起别名
-		declarer.declare(new Fields("itstar"));
+		declarer.declare(new Fields("wordcount"));
 	}
 
 }

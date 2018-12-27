@@ -168,7 +168,7 @@
 	5）Global Grouping
 	全局分组	
 	分配给task id值最小的
-	根据线程id判断，只分噢诶给线程id最小的
+	根据线程id判断，只分配给线程id最小的
 
 
 

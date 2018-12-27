@@ -24,7 +24,7 @@ public class WordCountSplitBolt extends BaseRichBolt {
 	@Override
 	public void execute(Tuple in) {
 		//1.获取数据
-		String line = in.getStringByField("itstar");
+		String line = in.getStringByField("wordcount");
 		
 		//2.切分数据
 		String[] fields = line.split(" ");

@@ -27,7 +27,7 @@ public class WordCountSpout extends BaseRichSpout {
 	@Override
 	public void nextTuple() {
 		//1.发送数据 到bolt
-		collector.emit(new Values("i like China very much"));
+		collector.emit(new Values("I like China very much"));
 		
 		//2.设置延迟
 		try {
@@ -47,7 +47,7 @@ public class WordCountSpout extends BaseRichSpout {
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
 		//起别名
-		declarer.declare(new Fields("itstar"));
+		declarer.declare(new Fields("wordcount"));
 	}
 
 }
