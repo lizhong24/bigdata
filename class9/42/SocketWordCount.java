@@ -48,7 +48,6 @@ public class SocketWordCount {
 
         //6.执行程序
         env.execute("Socket window WordCount");
-
     }
 
     public static class WordWithCount {
@@ -65,7 +64,7 @@ public class SocketWordCount {
         }
 
         public String toString(){
-            return word + ":" + count;
+            return word + " : " + count;
         }
     }
 }

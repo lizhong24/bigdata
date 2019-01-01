@@ -1,0 +1,104 @@
+一、scala简介
+	官网：https://www.scala-lang.org/
+	Scala语言很强大，集成了面向对象和函数式编程的特点。
+	运行在JVM（jdk）。
+	大数据中为什么学习scala?
+	spark是scala语言编写。
+	python写spark 挺好的
+	java写spark 很糟糕(代码实在是太多了)
+	scala写spark 很完美
+	
+二、scala特点
+	1）优雅
+	框架设计中第一个要考虑的问题就是API是否优雅。
+	精简的封装。
+	代码精简（少）。
+	2）速度快
+	scala语言表达能力强。
+	一行代码=多行java代码，开发速度快。
+	3）完美融合hadoop生态
+	scala是静态编译，表达能力强并且代码量少。
+
+三、安装Scala
+	1）下载scala-2.11.8.zip
+	2）解压到E:\temp\目录下
+	3）配置环境变量
+	SCALA_HOME=E:\temp\scala-2.11.8
+	PATH中加入%SCALA_HOME%\bin;
+
+四、Scala基础语法
+	1）Scala程序的开始HelloWorld
+	object HelloWorld {
+		def main(args: Array[String]): Unit = {
+			println("Hello, world!")
+		}
+	}
+	
+	2）Scala的数据类型
+	Scala与java一样，有8种数值类型：
+	Byte/Char/Short/Int/Long/Float/Double/Boolean/
+	和Unit类型(void)
+	注意：scala中无包装类型。
+	Unit：表示无值，用于不返回任何结果的方法的结果类型。
+	
+	3）Scala定义变量
+	两个关键字：val var
+	val:定义变量值不可变
+	var:定义的变量值是可变的
+	scala编译器会自动的推断类型！
+	指定类型： val str:String = "Hello World"
+	注意：类型要保持一致
+	Unit = ()：()相当于什么都没有用()表示。
+	
+	4）条件表达式
+	if:判断
+	val y = if(x>0) 1 else 2
+	
+	scala> val z = if(x>0) "error" else 1
+	z: Any = error
+	
+	Any:包含Anyval和AnyRef
+	Anyval:包含scala所有类型
+	AnyRef：Scala classes与Java Classes
+	Any相当于java的Object
+	val k = if(x<0) 0 else if(x>=1) 1 else -1
+	if和else if:多个条件的判断，符合条件看左侧，不符合条件看右侧
+	
+	5）块表达式
+	在scala中{}包含一系列表达式，块中的最后一个表达式的值就是块的值
+	例如：
+	def main(args: Array[String]): Unit = {
+		//块表达式
+		val a = 1
+
+		val rs = {
+			if(a > 2){
+				1
+			}else if (a < 2){
+				-1
+			}else{
+				0
+			}
+		}
+		println(rs)
+	}
+	
+	6）循环
+	yield:生成一个新的集合关键字
+	1.to(10).map(_*1000)
+	map:取出元素
+	_:代表元祖
+	
+	7）方法定义
+	Scala中 + - * / % 的作用和Java一样，但是特别的是，这些操作符实际上是方法。
+	1 to 10
+	1.to(10)
+	def m1(a:Int,b:Int):Int = {
+		a + b
+	}
+	def:定义方法的关键字
+	m1:方法名
+	a:参数列表
+	b:参数列表
+	Int:返回值类型
+	a + b:函数体

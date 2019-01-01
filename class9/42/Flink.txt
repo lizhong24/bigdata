@@ -104,7 +104,7 @@
 	6）访问ui界面
 	http://192.168.146.132:8081
 	
-八、flink单节点安装部署
+八、flink集群安装部署
 	1）下载安装包
 	https://archive.apache.org/dist/flink/flink-1.6.2/flink-1.6.2-bin-hadoop28-scala_2.11.tgz
 	2）上传安装包到/root下
@@ -138,6 +138,9 @@
 	
 	9）访问ui界面
 	http://192.168.146.132:8081
+	
+九、运行程序
+	[root@hd09-1 flink-1.6.2]# bin/flink run -c com.demo.flink.SocketWordCount /root/FlinkTest-1.0-SNAPSHOT.jar
 	
 	
 	

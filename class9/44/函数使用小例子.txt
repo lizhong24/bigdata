@@ -1,0 +1,43 @@
+//1、定义方法m2计算a和b的积
+scala> def m2(a:Int,b:Int):Int = a * b
+m2: (a: Int, b: Int)Int
+
+//2、调用方法m2
+scala> m2(4,6)
+res21: Int = 24
+
+//3、方法m2转换为函数
+scala> m2 _
+res22: (Int, Int) => Int = <function2>
+
+//4、定义一个参数的方法m1
+scala> def m1(a:String) = println(a)
+m1: (a: String)Unit
+
+//5、调用方法m1
+scala> m1("hello world")
+hello world
+
+//6、方法m1转换为函数
+scala> m1 _
+res24: String => Unit = <function1>
+
+//7、定义两个参数的函数(简写)
+scala> (a:Int,b:Int) => a * b
+res25: (Int, Int) => Int = <function2>
+
+//8、调用函数res25
+scala> res25(5,8)
+res26: Int = 40
+
+//9、定义两个参数的函数(标准写法)
+scala> (a:Int,b:Int) => {a * b}
+res27: (Int, Int) => Int = <function2>
+
+//10、定义函数h1
+scala> val h1 = (a:Int,b:Int) => {a * b}
+h1: (Int, Int) => Int = <function2>
+
+//11、调用函数h1
+scala> h1(4,9)
+res28: Int = 36

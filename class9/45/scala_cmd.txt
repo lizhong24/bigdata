@@ -1,0 +1,606 @@
+Microsoft Windows [版本 10.0.17134.472]
+(c) 2018 Microsoft Corporation。保留所有权利。
+
+C:\Users\15133>scala
+Welcome to Scala 2.11.8 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_191).
+Type in expressions for evaluation. Or try :help.
+
+scala> def sum(a:Int,b:Int) => {a + b}
+<console>:1: error: '=' expected but '=>' found.
+def sum(a:Int,b:Int) => {a + b}
+                     ^
+
+scala> val sum = (a:Int,b:Int) => {a + b}
+sum: (Int, Int) => Int = <function2>
+
+scala> sum(1,)
+<console>:1: error: illegal start of simple expression
+sum(1,)
+      ^
+
+scala> sum(1,_:Int)
+res0: Int => Int = <function1>
+
+scala> res0(2)
+res1: Int = 3
+
+scala> res0(20)
+res2: Int = 21
+
+scala> val name = "lz"
+name: String = lz
+
+scala> var age = 18
+age: Int = 18
+
+scala> println("name:"+name+"age:"+age)
+name:lzage:18
+
+scala> println("name:"+name+" age:"+age)
+name:lz age:18
+
+scala> println(f"name=$name age=$age")
+name=lz age=18
+
+scala> printf(s"name=$name age=$age")
+name=lz age=18
+scala> println(s"name=$name age=$age")
+name=lz age=18
+
+scala> println(s"1 + 1 = ${1+1}")
+1 + 1 = 2
+
+scala> println(f"1 + 1 = ${1+1}")
+1 + 1 = 2
+
+scala> def sum(a:Int,b:Int) = a + b
+sum: (a: Int, b: Int)Int
+
+scala> def sum(a:Int)(b:Int) = a + b
+sum: (a: Int)(b: Int)Int
+
+scala> sum(1,2)
+<console>:13: error: too many arguments for method sum: (a: Int)(b: Int)Int
+       sum(1,2)
+          ^
+
+scala> sum(1)(2)
+res11: Int = 3
+
+scala> var arr = Array(1,2,3)
+arr: Array[Int] = Array(1, 2, 3)
+
+scala> arr.map((x: Int) => x * 10)
+res12: Array[Int] = Array(10, 20, 30)
+
+scala> arr
+res13: Array[Int] = Array(1, 2, 3)
+
+scala> res12
+res14: Array[Int] = Array(10, 20, 30)
+
+scala> var arr = Array("hunter henshuai","reba heimei")
+arr: Array[String] = Array(hunter henshuai, reba heimei)
+
+scala> arr
+res15: Array[String] = Array(hunter henshuai, reba heimei)
+
+scala> arr.length
+res16: Int = 2
+
+scala> arr.map(_.split(" "))
+res17: Array[Array[String]] = Array(Array(hunter, henshuai), Array(reba, heimei))
+
+scala> arr.map(_.split(" ")).flatten
+res18: Array[String] = Array(hunter, henshuai, reba, heimei)
+
+scala> arr
+res19: Array[String] = Array(hunter henshuai, reba heimei)
+
+scala> arr.flatMap(_.split(" "))
+res20: Array[String] = Array(hunter, henshuai, reba, heimei)
+
+scala> res20
+res21: Array[String] = Array(hunter, henshuai, reba, heimei)
+
+scala> res20.foreach(x => println(x))
+hunter
+henshuai
+reba
+heimei
+
+scala> arr
+res23: Array[String] = Array(hunter henshuai, reba heimei)
+
+scala> arr.flatMap(_.split(" ")).groupBy(x => x)
+res24: scala.collection.immutable.Map[String,Array[String]] = Map(heimei -> Array(heimei), reba -> Array(reba), henshuai -> Array(henshuai), hunter -> Array(hunter))
+
+scala> arr
+res25: Array[String] = Array(hunter henshuai, reba heimei)
+
+scala> arr.flatMap(_.split(" ")).groupBy(x => x).map(x => (x._1,x._2))
+res26: scala.collection.immutable.Map[String,Array[String]] = Map(heimei -> Array(heimei), reba -> Array(reba), henshuai -> Array(henshuai), hunter -> Array(hunter))
+
+scala> arr.flatMap(_.split(" ")).groupBy(x => x).map(x => (x._1,x._2.length))
+res27: scala.collection.immutable.Map[String,Int] = Map(heimei -> 1, reba -> 1, henshuai -> 1, hunter -> 1)
+
+scala> arr.flatMap(_.split(" ")).groupBy(x => x).map(x => (x._1,x._2.length)).toList.sortBy(x => x._2)
+res28: List[(String, Int)] = List((heimei,1), (reba,1), (henshuai,1), (hunter,1))
+
+scala> arr.flatMap(_.split(" ")).groupBy(x => x).map(x => (x._1,x._2.length)).toList.sortBy(x => -x._2)
+res29: List[(String, Int)] = List((heimei,1), (reba,1), (henshuai,1), (hunter,1))
+
+scala> arr.flatMap(_.split(" ")).groupBy(x => x).map(x => (x._1,x._2.length)).toList.sortBy(x => x._2)
+res30: List[(String, Int)] = List((heimei,1), (reba,1), (henshuai,1), (hunter,1))
+
+scala> arr.flatMap(_.split(" ")).groupBy(x => x).map(x => (x._1,x._2.length)).toList.sortBy(x => -x._2)
+res31: List[(String, Int)] = List((heimei,1), (reba,1), (henshuai,1), (hunter,1))
+
+scala> arr.flatMap(_.split(" ")).groupBy(x => x).map(x => (x._1,x._2.length)).toList.sortBy(x => -x._1)
+<console>:13: error: value unary_- is not a member of String
+       arr.flatMap(_.split(" ")).groupBy(x => x).map(x => (x._1,x._2.length)).toList.sortBy(x => -x._1)
+                                                                                                 ^
+<console>:13: error: diverging implicit expansion for type scala.math.Ordering[B]
+starting with method Tuple9 in object Ordering
+       arr.flatMap(_.split(" ")).groupBy(x => x).map(x => (x._1,x._2.length)).toList.sortBy(x => -x._1)
+                                                                                           ^
+
+scala> arr.flatMap(_.split(" ")).groupBy(x => x).map(x => (x._1,x._2.length)).toList.sortBy(x => -x._2)
+res33: List[(String, Int)] = List((heimei,1), (reba,1), (henshuai,1), (hunter,1))
+
+scala> val s = List(1,2,3)
+s: List[Int] = List(1, 2, 3)
+
+scala> s.length
+res34: Int = 3
+
+scala> s(1) = 9
+<console>:13: error: value update is not a member of List[Int]
+       s(1) = 9
+       ^
+
+scala> val b = List(2,4,6)
+b: List[Int] = List(2, 4, 6)
+
+scala> b += 200
+<console>:13: error: value += is not a member of List[Int]
+       b += 200
+         ^
+
+scala> import scala.collection.mutable._
+import scala.collection.mutable._
+
+scala> val buff = ArrayBuffer(2,3,4)
+buff: scala.collection.mutable.ArrayBuffer[Int] = ArrayBuffer(2, 3, 4)
+
+scala> buff(1) = 300
+
+scala> buff
+res38: scala.collection.mutable.ArrayBuffer[Int] = ArrayBuffer(2, 300, 4)
+
+scala> buff += 400
+res39: buff.type = ArrayBuffer(2, 300, 4, 400)
+
+scala> buff
+res40: scala.collection.mutable.ArrayBuffer[Int] = ArrayBuffer(2, 300, 4, 400)
+
+scala> scala.collection.mutable.
+     |
+     | _
+<console>:3: error: identifier expected but '_' found.
+_
+^
+
+scala> scala.collection.mutable
+<console>:15: error: package scala.collection.mutable is not a value
+       scala.collection.mutable
+                        ^
+
+scala> scala.collection.mutable.List
+<console>:15: error: object List is not a member of package scala.collection.mutable
+       scala.collection.mutable.List
+                                ^
+
+scala> scala.collection.mutable.list
+<console>:15: error: object list is not a member of package scala.collection.mutable
+       scala.collection.mutable.list
+                                ^
+
+scala> import scala.collection.immutable._
+import scala.collection.immutable._
+
+scala> Nil
+res44: scala.collection.immutable.Nil.type = List()
+
+scala> val l = List(2,1,5,8,9)
+l: List[Int] = List(2, 1, 5, 8, 9)
+
+scala> l.head
+res45: Int = 2
+
+scala> l,tail
+<console>:1: error: ';' expected but ',' found.
+l,tail
+ ^
+
+scala> l.tail
+res46: List[Int] = List(1, 5, 8, 9)
+
+scala> 5::Nil
+res47: List[Int] = List(5)
+
+scala> Nil
+res48: scala.collection.immutable.Nil.type = List()
+
+scala> val a = Nil
+a: scala.collection.immutable.Nil.type = List()
+
+scala> 3::a
+res49: List[Int] = List(3)
+
+scala> a
+res50: scala.collection.immutable.Nil.type = List()
+
+scala> res49
+res51: List[Int] = List(3)
+
+scala> 1::2::3::Nil
+res52: List[Int] = List(1, 2, 3)
+
+scala> val ll = List(3,4,5)
+ll: List[Int] = List(3, 4, 5)
+
+scala> ll + "a"
+res53: String = List(3, 4, 5)a
+
+scala> ll
+res54: List[Int] = List(3, 4, 5)
+
+scala> ll ++ List(6,7)
+res55: List[Int] = List(3, 4, 5, 6, 7)
+
+scala> ll ++:List(6,7,8)
+res56: List[Int] = List(3, 4, 5, 6, 7, 8)
+
+scala> ll
+res57: List[Int] = List(3, 4, 5)
+
+scala> ll.+:(55)
+res58: List[Int] = List(55, 3, 4, 5)
+
+scala> ll :+ (555)
+res59: List[Int] = List(3, 4, 5, 555)
+
+scala> val lll = List(33,44)
+lll: List[Int] = List(33, 44)
+
+scala> ll:::lll
+res60: List[Int] = List(3, 4, 5, 33, 44)
+
+scala> ll.count(_)
+res61: (Int => Boolean) => Int = <function1>
+
+scala> ll.count(x => x>4)
+res62: Int = 1
+
+scala> ll.count(x => x>=4)
+res63: Int = 2
+
+scala> ll.filter(x => x>=5)
+res64: List[Int] = List(5)
+
+scala> val ls = List(6,2,1,3,8,7)
+ls: List[Int] = List(6, 2, 1, 3, 8, 7)
+
+scala> ls.sortBy(x => x)
+res65: List[Int] = List(1, 2, 3, 6, 7, 8)
+
+scala> ls.sortBy(x => - x)
+res66: List[Int] = List(8, 7, 6, 3, 2, 1)
+
+scala> ls
+res67: List[Int] = List(6, 2, 1, 3, 8, 7)
+
+scala> val sw = List(("h",2),("r",1),("m",4))
+sw: List[(String, Int)] = List((h,2), (r,1), (m,4))
+
+scala> sw.sortBy(x => x._)
+<console>:1: error: identifier expected but '_' found.
+sw.sortBy(x => x._)
+                 ^
+
+scala> sw.sortBy(x => x._2)
+res68: List[(String, Int)] = List((r,1), (h,2), (m,4))
+
+scala> sw.sortBy(x => -x._2)
+res69: List[(String, Int)] = List((m,4), (h,2), (r,1))
+
+scala> sw.sortWith((x,y) => x._2 > y._2)
+res70: List[(String, Int)] = List((m,4), (h,2), (r,1))
+
+scala> val sw = List(("h",2),("r",2),("m",4))
+sw: List[(String, Int)] = List((h,2), (r,2), (m,4))
+
+scala> sw.group
+<console>:19: error: value group is not a member of List[(String, Int)]
+       sw.group
+          ^
+
+scala> sw.group
+groupBy   grouped
+
+scala> sw.group
+groupBy   grouped
+
+scala> sw.grouped(2)
+res72: Iterator[List[(String, Int)]] = non-empty iterator
+
+scala> sw.grouped(2).toList
+res73: List[List[(String, Int)]] = List(List((h,2), (r,2)), List((m,4)))
+
+scala> val l2 = List(1,3,4)
+l2: List[Int] = List(1, 3, 4)
+
+scala> l2.fold(0)((x,y) => x+y)
+res74: Int = 8
+
+scala> l2.fold(1)((x,y) => x+y)
+res75: Int = 9
+
+scala> l2.fold(2)((x,y) => x+y)
+res76: Int = 10
+
+scala> l2.fold(2)((x,y) => x-y)
+res77: Int = -6
+
+scala> l2.foldRight((x,y) => x-y)
+<console>:19: error: missing parameter type
+       l2.foldRight((x,y) => x-y)
+                     ^
+<console>:19: error: missing parameter type
+       l2.foldRight((x,y) => x-y)
+                       ^
+<console>:19: error: missing argument list for method foldRight in class List
+Unapplied methods are only converted to functions when a function type is expected.
+You can make this conversion explicit by writing `foldRight _` or `foldRight(_)(_)` instead of `foldRight`.
+       l2.foldRight((x,y) => x-y)
+                   ^
+
+scala> l2.fold(2)(_+_)
+res79: Int = 10
+
+scala> l2.foldLeft(2)(_+_)
+res80: Int = 10
+
+scala> l2.foldRight(2)(_+_)
+res81: Int = 10
+
+scala> l2
+res82: List[Int] = List(1, 3, 4)
+
+scala> l2.fold
+<console>:19: error: missing argument list for method fold in trait TraversableOnce
+Unapplied methods are only converted to functions when a function type is expected.
+You can make this conversion explicit by writing `fold _` or `fold(_)(_)` instead of `fold`.
+       l2.fold
+          ^
+
+scala> l2.fold(0)(_-_)
+res84: Int = -8
+
+scala> l2.foldRight(0)(_-_)
+res85: Int = 2
+
+scala> l2
+res86: List[Int] = List(1, 3, 4)
+
+scala> ls.reduce(_+_)
+res87: Int = 27
+
+scala> l2.reduce(_ + _)
+res88: Int = 8
+
+scala> l2
+res89: List[Int] = List(1, 3, 4)
+
+scala> l2.reduce(_ - _)
+res90: Int = -6
+
+scala> l2.aggregate(0)(_+_._+_)
+<console>:1: error: identifier expected but '_' found.
+l2.aggregate(0)(_+_._+_)
+                    ^
+
+scala> l2.aggregate(0)(_+_,_+_)
+res91: Int = 8
+
+scala> l2
+res92: List[Int] = List(1, 3, 4)
+
+scala> val l3 = List(6,7,8)
+l3: List[Int] = List(6, 7, 8)
+
+scala> l2.zip
+zip   zipAll   zipWithIndex
+
+scala> l2.zip
+
+def zip[A1 >: Int, B, That](that: scala.collection.GenIterable[B])(implicit bf: scala.collection.generic.CanBuildFrom[List[Int],(A1, B),That]): That
+
+scala> l2.zipl2.zip(l3)
+<console>:20: error: value zipl2 is not a member of List[Int]
+       l2.zipl2.zip(l3)
+          ^
+
+scala> l2.zip(l3)
+res94: List[(Int, Int)] = List((1,6), (3,7), (4,8))
+
+scala> l2.sum
+res95: Int = 8
+
+scala> val l4 = Set(2,3,4)
+l4: scala.collection.immutable.Set[Int] = Set(2, 3, 4)
+
+scala> val s = Set(2,3,4)
+s: scala.collection.immutable.Set[Int] = Set(2, 3, 4)
+
+scala> val s = Set(2,3,4)
+s: scala.collection.immutable.Set[Int] = Set(2, 3, 4)
+
+scala> val s = Set(2,3,4)
+s: scala.collection.immutable.Set[Int] = Set(2, 3, 4)
+
+scala> val s = Set(2,3,4)
+s: scala.collection.immutable.Set[Int] = Set(2, 3, 4)
+
+scala> val s = Set(2,3,3,4)
+s: scala.collection.immutable.Set[Int] = Set(2, 3, 4)
+
+scala> val s = Set(2,3,3,4)
+s: scala.collection.immutable.Set[Int] = Set(2, 3, 4)
+
+scala> s += 5
+<console>:19: error: value += is not a member of scala.collection.immutable.Set[Int]
+       s += 5
+         ^
+
+scala> collection.mutable.HashSet
+res97: collection.mutable.HashSet.type = scala.collection.mutable.HashSet$@77a489b7
+
+scala> val l5 = collection.mutable.HashSet(2,3,4)
+l5: scala.collection.mutable.HashSet[Int] = Set(2, 3, 4)
+
+scala> l5 += 5
+res98: l5.type = Set(5, 2, 3, 4)
+
+scala> l5
+res99: scala.collection.mutable.HashSet[Int] = Set(5, 2, 3, 4)
+
+scala> l5.remove(2)
+res100: Boolean = true
+
+scala> l5
+res101: scala.collection.mutable.HashSet[Int] = Set(5, 3, 4)
+
+scala> l5 -= 3
+res102: l5.type = Set(5, 4)
+
+scala> l5
+res103: scala.collection.mutable.HashSet[Int] = Set(5, 4)
+
+scala> l4
+res104: scala.collection.immutable.Set[Int] = Set(2, 3, 4)
+
+scala> l4 ++ l5
+res105: scala.collection.immutable.Set[Int] = Set(2, 3, 4, 5)
+
+scala> l5
+res106: scala.collection.mutable.HashSet[Int] = Set(5, 4)
+
+scala> l5 +== Set(3,2)
+<console>:19: error: value +== is not a member of scala.collection.mutable.HashSet[Int]
+       l5 +== Set(3,2)
+          ^
+
+scala> l5 ++= Set(3,2)
+res108: l5.type = Set(5, 2, 3, 4)
+
+scala> val m = Map[String,Int]("hello"->2,"reba"->8)
+m: scala.collection.immutable.Map[String,Int] = Map(hello -> 2, reba -> 8)
+
+scala> m("hello")
+res109: Int = 2
+
+scala> m("hello") = 4
+<console>:19: error: value update is not a member of scala.collection.immutable.Map[String,Int]
+       m("hello") = 4
+       ^
+
+scala> val m2 == collection.mutable.HashMap[String,Int]()
+     |
+     | ;
+<console>:3: error: '=' expected but ';' found.
+;
+^
+
+scala> val m2 = collection.mutable.HashMap[String,Int]()
+m2: scala.collection.mutable.HashMap[String,Int] = Map()
+
+scala> m2.put("hunter",18)
+res111: Option[Int] = None
+
+scala> m2
+res112: scala.collection.mutable.HashMap[String,Int] = Map(hunter -> 18)
+
+scala> m2 += "weight" -> 128
+res113: m2.type = Map(weight -> 128, hunter -> 18)
+
+scala> m2
+res114: scala.collection.mutable.HashMap[String,Int] = Map(weight -> 128, hunter -> 18)
+
+scala> m2.remove("hunter")
+res115: Option[Int] = Some(18)
+
+scala> m2
+res116: scala.collection.mutable.HashMap[String,Int] = Map(weight -> 128)
+
+scala> m2 -= "weight"
+res117: m2.type = Map()
+
+scala> m2
+res118: scala.collection.mutable.HashMap[String,Int] = Map()
+
+scala> m2 += "weight" -> 123
+res119: m2.type = Map(weight -> 123)
+
+scala> m2.get("weight")
+res120: Option[Int] = Some(123)
+
+scala> m2.getOrElse("hunter",18)
+res121: Int = 18
+
+scala> m2
+res122: scala.collection.mutable.HashMap[String,Int] = Map(weight -> 123)
+
+scala> m2 += "hunter" -> 28
+res123: m2.type = Map(weight -> 123, hunter -> 28)
+
+scala> m2
+res124: scala.collection.mutable.HashMap[String,Int] = Map(weight -> 123, hunter -> 28)
+
+scala> m2.getOrElse("hunter",28)
+res125: Int = 28
+
+scala> m2.getOrElse("hunter",18)
+res126: Int = 28
+
+scala> val t = (2,true,"hunter",Unit)
+t: (Int, Boolean, String, Unit.type) = (2,true,hunter,object scala.Unit)
+
+scala> t
+res127: (Int, Boolean, String, Unit.type) = (2,true,hunter,object scala.Unit)
+
+scala> t._1
+res128: Int = 2
+
+scala> t._3
+res129: String = hunter
+
+scala> val t1 = ("hunter",18)
+t1: (String, Int) = (hunter,18)
+
+scala> t1.swap
+res130: (Int, String) = (18,hunter)
+
+scala> val t3 = Array(("hunter",18),("reba",16))
+t3: Array[(String, Int)] = Array((hunter,18), (reba,16))
+
+scala> t.foldLeft(0)(_+_._2)
+<console>:19: error: value foldLeft is not a member of (Int, Boolean, String, Unit.type)
+       t.foldLeft(0)(_+_._2)
+         ^
+
+scala> t3.foldLeft(0)(_+_._2)
+res132: Int = 34
+
+scala>
