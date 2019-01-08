@@ -1,0 +1,400 @@
+一、scala简介
+	官网：https://www.scala-lang.org/
+	Scala语言很强大，集成了面向对象和函数式编程的特点。
+	运行在JVM（jdk）。
+	大数据中为什么学习scala?
+	spark是scala语言编写。
+	python写spark 挺好的
+	java写spark 很糟糕(代码实在是太多了)
+	scala写spark 很完美
+	
+二、scala特点
+	1）优雅
+	框架设计中第一个要考虑的问题就是API是否优雅。
+	精简的封装。
+	代码精简（少）。
+	2）速度快
+	scala语言表达能力强。
+	一行代码=多行java代码，开发速度快。
+	3）完美融合hadoop生态
+	scala是静态编译，表达能力强并且代码量少。
+
+三、安装Scala
+	1）下载scala-2.11.8.zip
+	2）解压到E:\temp\目录下
+	3）配置环境变量
+	SCALA_HOME=E:\temp\scala-2.11.8
+	PATH中加入%SCALA_HOME%\bin;
+
+四、Scala基础语法
+	1）Scala程序的开始HelloWorld
+	object HelloWorld {
+		def main(args: Array[String]): Unit = {
+			println("Hello, world!")
+		}
+	}
+	
+	2）Scala的数据类型
+	Scala与java一样，有8种数值类型：
+	Byte/Char/Short/Int/Long/Float/Double/Boolean/
+	和Unit类型(void)
+	注意：scala中无包装类型。
+	Unit：表示无值，用于不返回任何结果的方法的结果类型。
+	
+	3）Scala定义变量
+	两个关键字：val var
+	val:定义变量值不可变
+	var:定义的变量值是可变的
+	scala编译器会自动的推断类型！
+	指定类型： val str:String = "Hello World"
+	注意：类型要保持一致
+	Unit = ()：()相当于什么都没有用()表示。
+	
+	4）条件表达式
+	if:判断
+	val y = if(x>0) 1 else 2
+	
+	scala> val z = if(x>0) "error" else 1
+	z: Any = error
+	
+	Any:包含Anyval和AnyRef
+	Anyval:包含scala所有类型
+	AnyRef：Scala classes与Java Classes
+	Any相当于java的Object
+	val k = if(x<0) 0 else if(x>=1) 1 else -1
+	if和else if:多个条件的判断，符合条件看左侧，不符合条件看右侧
+	
+	5）块表达式
+	在scala中{}包含一系列表达式，块中的最后一个表达式的值就是块的值
+	例如：
+	def main(args: Array[String]): Unit = {
+		//块表达式
+		val a = 1
+
+		val rs = {
+			if(a > 2){
+				1
+			}else if (a < 2){
+				-1
+			}else{
+				0
+			}
+		}
+		println(rs)
+	}
+	
+	6）循环
+	yield:生成一个新的集合关键字
+	1.to(10).map(_*1000)
+	map:取出元素
+	_:代表元祖
+	
+五、方法定义
+	Scala中 + - * / % 的作用和Java一样，但是特别的是，这些操作符实际上是方法。
+	1 to 10
+	1.to(10)
+	
+	def m2(a:Int,b:Int): Int = a * b
+	
+	def m1(a:Int,b:Int):Int = {
+		a + b
+	}
+	def:定义方法的关键字
+	m1:方法名
+	a:参数列表
+	b:参数列表
+	Int:返回值类型
+	a + b:函数体
+
+六、函数
+	1）方式1
+	方法转换为函数
+	方式:方法名 _
+	res6: (Int, Int) => Int = <function2>
+	<function2>
+	代表一个函数，并且有两个参数。
+	(Int, Int)
+	代表参数列表
+	Int
+	代表返回值类型
+	=>
+	代表函数
+	
+	2）方式2
+	定义函数：
+	val h1 = (a:Int,b:Int) => {a * b}
+	h1:函数名
+	(a:Int,b:Int)：函数的参数类型
+	{a * b}：函数体
+
+七、传值调用&传名调用
+	函数式编程：方法的参数可以是一个函数
+	传值调用：
+	1.先计算balance的值
+	2.把这个值作为参数传递给printMoney
+	传名调用：传递的是函数
+	将balance方法的名称传递到方法内部执行
+
+八、可变参数函数
+	java中的可变参数：public static void m1(String ...arg){}
+	scala中的可变参数：def sum(ints:Int*): Int ={}
+	加了通配符*
+
+九、默认参数值函数
+	如果传递了参数，则使用传递的值。如果不传递参数，则使用默认值。
+
+十、高阶函数
+	定义：将其他函数作为参数，或者其结果是函数的函数。
+
+十一、部分参数应用函数
+	如果函数传递所有预期的函数，则表示完全应用它了。
+	如果只传递几个参数，并不是全部参数，那么将返回部分应用的函数。
+
+十二、字符串的格式化输出
+	文字插值器：f/s
+
+十三、柯理化
+	指的是将原来接收的两个参数的函数变为一个新的接收一个参数的函数，这样的一个过程。
+	函数的通用性降低，但是适用性提高
+
+十四、偏函数
+	被包在花括号内没有match的一组case语句的是一个偏函数。
+	PartialFunction[A,B]
+	A: 参数类型
+	B：返回类型
+	常用与模式匹配。
+	
+十五、scala数组
+	数组定义1： var arr = new Array[String](3)
+	String:存储的元素类型
+	3:存储3个元素
+	添加元素： arr(1) = "hello"
+	数组定义2： val arr1 = Array[Int](1,2,3,4,5,6)
+	改变内容：arr1(1) = 18
+	添加元素：arr1 += 22 长度不可以改变
+	
+十六、数组方法
+	-》map(映射)
+	映射： 2 4 6
+	映射关系：f(x) = x*5
+	对应映射关系：10 20 30
+	
+	-》flatten
+	扁平化操作
+	-》flatMap
+	相当于先map操作再flatten
+	-》foreach
+	遍历数组中的元素
+	-》GroupBy
+	分组
+	-》sortBy
+	排序
+
+十七、集合
+	scala集合有两种类型：可变mutable
+	不可变Immutable
+	val b = List(2,4,6)
+	不可变集合：内容不可变（数组内容可改变）
+	长度不可变
+	可变集合：
+	注意：需要导包
+	import scala.collection.mutable._
+	val buff = ArrayBuffer(2,3,4)
+	内容可变:buff(1) = 300
+	长度可变：buff += 200
+
+十八、长度可变的数组
+	创建长度可变数组：
+	val ab = scala.collection.mutable.ArrayBuffer(2,3,4)
+	长度可变：
+	ab += 440
+
+十九、Seq序列
+	不可变的序列
+	在scala中列表要么为空（Nil表示空列表）
+	head元素上加上一个tail列表
+	
+	head:取头元素	
+	tail:取尾元素（除了头全是尾）
+	
+	5::Nil 空列表的头加入一个元素
+	1::2::3::Nil 空列表前加入三个元素1,2,3
+	
+	+ 字符串的拼接
+	++ 两个集合相加
+	++: 合并集合
+	.+: 头部追加元素
+	:+ 尾部追加元素
+	::: 两个集合相加
+	count 统计个数
+	filter 过滤
+	sortBy 排序
+	sortWwith 排序
+	grouped 分组
+	fold 折叠
+	foldLeft 左折叠
+	foldRight 右折叠
+	reduce 聚合
+	aggregate 先局部聚合再全局聚合
+	zip 拉链
+	sum 求和
+
+二十、Set
+	无序的，不重复的集合
+	Set不可变的集合
+	val l5 = collection.mutable.HashSet(2,3,4)
+	HashSet可变的集合
+	remove 删除元素
+	-= 删除元素
+	++ 集合相加
+	++= 相加并赋值
+
+二十一、Map
+	不可变Map:val m = Map[String,Int]("hello"->2,"rebba"->8)
+	可变Map:
+	getOrElse：如果有值返回值，没有返回默认值
+
+二十二、元组tuple
+	元组中可以是任意元素
+	val t = (2,true,"lisi",Unit)
+	取元素：t._1
+	对偶元组：有两个元素的元组
+
+二十三、Scala的面向对象
+	我们要封装数据，定义模板等操作，所以我们需要面向对象。
+	1）scala中的单例对象
+	在scala当中，是没有static的，scala给我们提供了单例模式的实现方法。就是使用关键字object。
+	static在java中修饰属性和方法，目的是直接类名.进行调用。
+	在scala中object是一个单例对象
+    在scala中object定义的成员变量和方法都是静态的
+	可以通过 类名. 来进行调用
+	
+	2）scala类与构造器的使用
+	scala中主构造器：
+	定义在类名后面的构造器叫主构造器
+	scala辅助构造器：
+	定义在class类中，可以有多个辅助构造器
+	
+	如果主构造器中成员变量属性没有被val var修饰的话，该属性不能被访问
+    相当于java中没有对外提供get方法
+
+    如果成员属性使用var修饰的话，相当于java中对外提供了get方式和set方式
+    如果成员属性使用val修饰的话，相当于java中对外只提供了get方式
+	
+	3）构造器的访问权限
+	在主构造器或者辅助构造器前加上private修饰符即可
+	
+	4）类的访问权限
+	
+	5）伴生对象
+	
+	6）特质
+	相当于java中Interface接口
+	
+	7）混入特质
+	
+	8）抽象类
+	
+	9）模式匹配
+	match case
+
+二十四、关键字
+	1)final
+	如果方法不想被重写可以使用final关键字进行修饰
+	用final修饰的：
+	类：类不能被继承
+	方法：不能被重写
+	val
+	2)type
+	别名设置
+	使我们的程序变得更灵活
+	T
+
+二十五、样例类&样例对象
+	1）样例类
+	样例类支持模式匹配
+	写法：case class 类名(属性...)
+	2)样例对象
+	写法：case object 类名(属性...)
+	不能封装数据
+	支持模式匹配
+	case object Check
+	match{
+		case "Check" => println(Check)
+	}
+
+二十六、并发编程模型AKKA
+	Spark使用底层通信框架AKKA
+	分布式
+	master
+	worker
+	hadoop使用的是rpc
+	
+	1)akka简介
+	写并发程序很难，AKKA解决spark这个问题。
+	akka构建在JVM平台上，是一种高并发、分布式、并且容错的应用工具包
+	akka用scala语言编写同时提供了scala和java的开发接口
+	akka可以开发一些高并发程序。
+	
+	2）Akka的Actor模型
+	akka处理并发的方法基于actor模型
+	在基于actor的系统中，所有事物都是actor。
+	actor作为一个并发模型设计和架构的，面向对象不是。
+	actor与actor之间只能通过消息通信。
+	
+	Akka特点：
+	（1）对并发模型进行了更高的抽象
+	（2）异步、非阻塞、高性能的事件驱动编程模型
+	（3）轻量级事件处理（1G内存可以容纳百万级别的Actor）
+	同步：阻塞（发消息 一直等待消息）
+	异步：不阻塞（发消息 不等待 该干嘛干嘛）
+	actor简化了并发编程，提高了程序性能。
+
+二十七、AKKA编程
+	1）需求
+	我发消息，自己收
+	2)需求
+	一个Actor发送消息，另外一个Actor接收消息
+
+二十八、隐式
+	implicit分类：
+	（1）隐式参数
+	（2）隐式转换类型
+	（3）隐式类
+	特点：让代码变得更加灵活
+
+二十九、泛型
+	type
+	如何定义scala中的泛型？
+
+三十、类型约束
+	java中Comparable
+	Scala中的比较的特质：
+	Ordered
+	
+	上界(upper Bounds)
+	<T extends Person>表示T类型是Person的子类型
+	<? extends Person>
+	[T <: Person]此时T是Person的子类，这种形式是上界
+	[_ <: Person]
+	
+	def pr(list:List[_<:Any]){
+		list.foreach(print)
+	}
+	
+	下界(lower Bounds)
+	<T super Person>
+	<? super Person>
+	
+	[T >: Person]
+	[_ >: Person]
+	
+	视图界定(View Bounds)
+	<%
+	视图界定发生了隐式转换
+	
+	上下文界定
+	comparator
+	scala->ordering
+	上下文界定发生了隐式转换	
+	
