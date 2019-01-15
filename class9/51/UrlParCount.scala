@@ -1,4 +1,4 @@
-package demo
+package day02
 
 import java.net.URL
 
@@ -18,7 +18,7 @@ object UrlParCount {
     val sc: SparkContext = new SparkContext(conf)
 
     //2.加载数据
-    val rdd1 = sc.textFile("e:/itstar.log").map(line => {
+    val rdd1 = sc.textFile("e:/access.log").map(line => {
       val s: Array[String] = line.split("\t")
       //元组输出
       (s(1), 1)
@@ -42,19 +42,18 @@ object UrlParCount {
 
     //6.加入分区规则
     val rdd4: RDD[(String, (String, Int))] = rdd3.partitionBy(xueYuanPartitioner).mapPartitions(it => {
-      it.toList.sortBy(_._2._2).reverse.take(3).iterator
+      it.toList.sortBy(_._2._2).reverse.take(1).iterator
     })
 
-    //7.把结果存储
-    rdd4.saveAsTextFile("e://parout")
+    //7.遍历打印
+    rdd4.saveAsTextFile("e://pout")
 
     //8.关闭资源
     sc.stop()
   }
 }
 
-class XueYuanPartitioner(xy: Array[String]) extends Partitioner{
-
+class XueYuanPartitioner(xy: Array[String]) extends Partitioner {
   //自定义规则 学院 分区号
   val rules: mutable.HashMap[String, Int] = new mutable.HashMap[String, Int]()
   var number = 0

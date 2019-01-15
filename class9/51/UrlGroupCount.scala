@@ -1,4 +1,4 @@
-package demo
+package day02
 
 import java.net.URL
 
@@ -18,7 +18,7 @@ object UrlGroupCount {
     val sc: SparkContext = new SparkContext(conf)
 
     //2.加载数据
-    val rdd1: RDD[String] = sc.textFile("e:/itstar.log")
+    val rdd1: RDD[String] = sc.textFile("e:/access.log")
 
     //3.切分
     val rdd2: RDD[(String, Int)] = rdd1.map(line => {
@@ -27,7 +27,7 @@ object UrlGroupCount {
       (s(1), 1)
     })
 
-    //4.求出总访问量 网址，总的访问量
+    //4.求出总的访问量  网址，总的访问量
     val rdd3: RDD[(String, Int)] = rdd2.reduceByKey(_+_)
 
     //5.取出学院
