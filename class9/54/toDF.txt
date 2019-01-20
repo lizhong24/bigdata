@@ -1,0 +1,118 @@
+
+scala> val rdd = sc.textFile("hdfs://192.168.146.111:9000/user.txt").map(_.split("\t"))
+rdd: org.apache.spark.rdd.RDD[Array[String]] = MapPartitionsRDD[2] at map at <console>:24
+
+scala> case class User(id:Int,name:String,age:Int)
+defined class User
+
+scala> val userRdd = rdd.map(x => User(x(0).toInt,x(1),x(2).toInt))
+userRdd: org.apache.spark.rdd.RDD[User] = MapPartitionsRDD[4] at map at <console>:28
+
+scala> val udf = userRdd.toDF
+udf: org.apache.spark.sql.DataFrame = [id: int, name: string ... 1 more field]
+
+scala> udf.show()
++---+------------+---+
+| id|        name|age|
++---+------------+---+
+|  1|    zhangsan| 18|
+|  2|        lisi| 23|
+|  3|         tom| 26|
+|  4|        mary| 16|
+|  5|zhangsanfeng|128|
++---+------------+---+
+
+
+scala> udf.select("name","age").show()
++------------+---+
+|        name|age|
++------------+---+
+|    zhangsan| 18|
+|        lisi| 23|
+|         tom| 26|
+|        mary| 16|
+|zhangsanfeng|128|
++------------+---+
+
+
+scala> udf.filter(col("id") <= 3).show()
++---+--------+---+
+| id|    name|age|
++---+--------+---+
+|  1|zhangsan| 18|
+|  2|    lisi| 23|
+|  3|     tom| 26|
++---+--------+---+
+
+
+scala> udf.filter(col("id") > 3).show()
++---+------------+---+
+| id|        name|age|
++---+------------+---+
+|  4|        mary| 16|
+|  5|zhangsanfeng|128|
++---+------------+---+
+
+
+scala> udf.groupBy(("name")).count.show()
++------------+-----+                                                            
+|        name|count|
++------------+-----+
+|zhangsanfeng|    1|
+|        mary|    1|
+|    zhangsan|    1|
+|         tom|    1|
+|        lisi|    1|
++------------+-----+
+
+
+scala> udf.sort("age").show()
++---+------------+---+
+| id|        name|age|
++---+------------+---+
+|  4|        mary| 16|
+|  1|    zhangsan| 18|
+|  2|        lisi| 23|
+|  3|         tom| 26|
+|  5|zhangsanfeng|128|
++---+------------+---+
+
+
+scala> udf.orderBy("age").show()
++---+------------+---+
+| id|        name|age|
++---+------------+---+
+|  4|        mary| 16|
+|  1|    zhangsan| 18|
+|  2|        lisi| 23|
+|  3|         tom| 26|
+|  5|zhangsanfeng|128|
++---+------------+---+
+
+
+scala> udf.registerTempTable("user_t")
+warning: there was one deprecation warning; re-run with -deprecation for details
+
+scala> spark.sqlContext.sql("select * from user_t").show()
++---+------------+---+
+| id|        name|age|
++---+------------+---+
+|  1|    zhangsan| 18|
+|  2|        lisi| 23|
+|  3|         tom| 26|
+|  4|        mary| 16|
+|  5|zhangsanfeng|128|
++---+------------+---+
+
+
+scala> spark.sqlContext.sql("select name,age from user_t where age>18").show()
++------------+---+
+|        name|age|
++------------+---+
+|        lisi| 23|
+|         tom| 26|
+|zhangsanfeng|128|
++------------+---+
+
+
+scala> 
